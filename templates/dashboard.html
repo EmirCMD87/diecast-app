@@ -163,6 +163,7 @@
     </header>
 
     <div class="container">
+        <!-- RENK İSTATİSTİĞİ -->
         {% if renk_sayilari %}
             <div class="renk-grubu">
                 <div class="renk-baslik">🎨 Renklerine Göre Dağılım</div>
@@ -170,6 +171,24 @@
                     {% for renk, sayi in renk_sayilari.items() %}
                         <span style="background: #e9ecef; padding: 0.3rem 0.8rem; border-radius: 20px;">
                             🎨 {{ renk }}: {{ sayi }} araba
+                        </span>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- MARKA İSTATİSTİĞİ (YENİ) -->
+        {% if marka_sayilari %}
+            <div class="renk-grubu">
+                <div class="renk-baslik">🏷️ Markalarına Göre Dağılım</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+                    {% for marka, sayi in marka_sayilari.items() %}
+                        <span style="background: #e9ecef; padding: 0.3rem 0.8rem; border-radius: 20px;">
+                            {% if marka == "Hot Wheels" %}🔥
+                            {% elif marka == "Matchbox" %}📦
+                            {% else %}🚗
+                            {% endif %}
+                            {{ marka }}: {{ sayi }} araba
                         </span>
                     {% endfor %}
                 </div>
@@ -185,6 +204,7 @@
                         <img src="/{{ araba.resim_yolu }}" alt="{{ araba.isim }}">
                         <div class="araba-info">
                             <h3>{{ araba.isim }}</h3>
+                            <p>🏷️ Marka: {{ araba.marka }}</p>
                             <p>🎨 Renk: {{ araba.renk }}</p>
                             <p>📅 Ekleme: {{ araba.tarih.strftime('%d.%m.%Y') }}</p>
                             <a href="{{ url_for('araba_sil', araba_id=araba.id) }}" class="sil-btn" onclick="return confirm('Bu arabayı silmek istediğinize emin misiniz?')">🗑️ Sil</a>
