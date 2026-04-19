@@ -35,7 +35,7 @@ class User(UserMixin, db.Model):
 class Araba(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     isim = db.Column(db.String(100), nullable=False)
-    marka = db.Column(db.String(50), nullable=False)  # YENİ: Hot Wheels / Matchbox / Diğer
+    marka = db.Column(db.String(50), nullable=False)
     renk = db.Column(db.String(50), nullable=False)
     resim_yolu = db.Column(db.String(200), nullable=False)
     tarih = db.Column(db.DateTime, default=datetime.utcnow)
@@ -115,7 +115,6 @@ def dashboard():
     for renk in renkler:
         renk_sayilari[renk] = renk_sayilari.get(renk, 0) + 1
     
-    # YENİ: Marka istatistikleri
     markalar = [araba.marka for araba in arabalar]
     marka_sayilari = {}
     for marka in markalar:
@@ -132,7 +131,7 @@ def dashboard():
 def araba_ekle():
     if request.method == "POST":
         isim = request.form["isim"]
-        marka = request.form["marka"]  # YENİ
+        marka = request.form["marka"]
         renk = request.form["renk"]
         
         if "resim" not in request.files:
@@ -155,7 +154,7 @@ def araba_ekle():
         
         yeni_araba = Araba(
             isim=isim,
-            marka=marka,  # YENİ
+            marka=marka,
             renk=renk,
             resim_yolu=dosya_yolu,
             user_id=current_user.id
@@ -186,8 +185,11 @@ def araba_sil(araba_id):
     flash(f"{araba.isim} silindi.", "info")
     return redirect(url_for("dashboard"))
 
+# ------------------- VERİTABANI OLUŞTUR (RENDER İÇİN) -------------------
+with app.app_context():
+    db.create_all()
+    print("✅ Veritabanı tabloları oluşturuldu!")
+
 # ------------------- UYGULAMAYI BAŞLAT -------------------
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
     app.run(debug=True, host="0.0.0.0", port=5000)
