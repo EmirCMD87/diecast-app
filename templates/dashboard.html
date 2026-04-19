@@ -142,6 +142,14 @@
         .flash.danger { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
         .flash.info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
     </style>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GQS70MDDPQ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-GQS70MDDPQ');
+    </script>
 </head>
 <body>
     <header>
@@ -177,7 +185,7 @@
             </div>
         {% endif %}
 
-        <!-- MARKA İSTATİSTİĞİ (YENİ) -->
+        <!-- MARKA İSTATİSTİĞİ -->
         {% if marka_sayilari %}
             <div class="renk-grubu">
                 <div class="renk-baslik">🏷️ Markalarına Göre Dağılım</div>
@@ -235,4 +243,4 @@
         }, 3000);
     </script>
 </body>
-</html>
+</html>0
