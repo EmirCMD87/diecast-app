@@ -35,6 +35,7 @@ class User(UserMixin, db.Model):
 class Araba(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     isim = db.Column(db.String(100), nullable=False)
+    marka = db.Column(db.String(50), nullable=False)  # YENİ: Hot Wheels / Matchbox / Diğer
     renk = db.Column(db.String(50), nullable=False)
     resim_yolu = db.Column(db.String(200), nullable=False)
     tarih = db.Column(db.DateTime, default=datetime.utcnow)
@@ -64,13 +65,11 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
         
-        # Kullanıcı var mı kontrol et
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash("Bu kullanıcı adı zaten alınmış!", "danger")
             return redirect(url_for("register"))
         
-        # Yeni kullanıcı oluştur
         hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
         new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
@@ -108,29 +107,34 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    # Kullanıcının tüm arabalarını al
     arabalar = Araba.query.filter_by(user_id=current_user.id).order_by(Araba.tarih.desc()).all()
     
-    # İstatistikler
     toplam_araba = len(arabalar)
     renkler = [araba.renk for araba in arabalar]
     renk_sayilari = {}
     for renk in renkler:
         renk_sayilari[renk] = renk_sayilari.get(renk, 0) + 1
     
+    # YENİ: Marka istatistikleri
+    markalar = [araba.marka for araba in arabalar]
+    marka_sayilari = {}
+    for marka in markalar:
+        marka_sayilari[marka] = marka_sayilari.get(marka, 0) + 1
+    
     return render_template("dashboard.html", 
                          arabalar=arabalar, 
                          toplam_araba=toplam_araba,
-                         renk_sayilari=renk_sayilari)
+                         renk_sayilari=renk_sayilari,
+                         marka_sayilari=marka_sayilari)
 
 @app.route("/araba_ekle", methods=["GET", "POST"])
 @login_required
 def araba_ekle():
     if request.method == "POST":
         isim = request.form["isim"]
+        marka = request.form["marka"]  # YENİ
         renk = request.form["renk"]
         
-        # Dosya kontrolü
         if "resim" not in request.files:
             flash("Resim seçmediniz!", "danger")
             return redirect(request.url)
@@ -145,14 +149,13 @@ def araba_ekle():
             flash("Sadece resim dosyaları yüklenebilir (png, jpg, jpeg, gif, webp)", "danger")
             return redirect(request.url)
         
-        # Dosyayı kaydet
         filename = secure_filename(f"{current_user.id}_{datetime.now().timestamp()}_{dosya.filename}")
         dosya_yolu = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         dosya.save(dosya_yolu)
         
-        # Veritabanına kaydet
         yeni_araba = Araba(
             isim=isim,
+            marka=marka,  # YENİ
             renk=renk,
             resim_yolu=dosya_yolu,
             user_id=current_user.id
@@ -170,12 +173,10 @@ def araba_ekle():
 def araba_sil(araba_id):
     araba = Araba.query.get_or_404(araba_id)
     
-    # Sadece kendi arabasını silebilir
     if araba.user_id != current_user.id:
         flash("Bu arabayı silme yetkiniz yok!", "danger")
         return redirect(url_for("dashboard"))
     
-    # Resim dosyasını sil
     if os.path.exists(araba.resim_yolu):
         os.remove(araba.resim_yolu)
     
@@ -188,5 +189,5 @@ def araba_sil(araba_id):
 # ------------------- UYGULAMAYI BAŞLAT -------------------
 if __name__ == "__main__":
     with app.app_context():
-        db.create_all()  # Veritabanını oluştur
+        db.create_all()
     app.run(debug=True, host="0.0.0.0", port=5000)
