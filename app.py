@@ -11,10 +11,13 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = "diecast_gizli_anahtar_123"
 
-# Oturum ayarları (Beni Hatırla için)
+# ============ OTURUM VE ÇEREZ AYARLARI (Beni Hatırla için) ============
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
-app.config['REMEMBER_COOKIE_SECURE'] = False  # HTTP için False, HTTPS için True
+app.config['REMEMBER_COOKIE_SECURE'] = False  # HTTPS kullanmıyorsan False, HTTPS'de True yap
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
+# ====================================================================
 
 # Veritabanı
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///diecast.db"
@@ -69,12 +72,10 @@ def register():
         username = request.form["username"].strip()
         password = request.form["password"]
         
-        # Boş kontrol
         if not username or not password:
             flash("Kullanıcı adı ve şifre boş olamaz!", "danger")
             return redirect(url_for("register"))
         
-        # Kullanıcı adı kontrolü
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             flash("❌ Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.", "danger")
@@ -90,7 +91,7 @@ def register():
             return redirect(url_for("login"))
         except Exception as e:
             db.session.rollback()
-            flash(f"❌ Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.", "danger")
+            flash("❌ Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.", "danger")
             return redirect(url_for("register"))
     
     return render_template("register.html")
@@ -105,7 +106,7 @@ def login():
         
         if user and check_password_hash(user.password, password):
             remember = True if request.form.get('remember') else False
-            login_user(user, remember=remember)
+            login_user(user, remember=remember, duration=timedelta(days=30))
             flash(f"Hoş geldin, {username}! ✅", "success")
             return redirect(url_for("dashboard"))
         else:
