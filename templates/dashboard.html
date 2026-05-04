@@ -30,11 +30,14 @@
             font-weight: 600;
             display: inline-block;
             text-align: center;
+            border: none;
+            cursor: pointer;
         }
         .btn-primary { background: #28a745; color: white; }
         .btn-secondary { background: #6c757d; color: white; }
-        .btn-instagram { background: #E4405F; color: white; }
         .btn-whatsapp { background: #25D366; color: white; }
+        .btn-telegram { background: #0088cc; color: white; }
+        .btn-instagram { background: #E4405F; color: white; }
         .header-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
         .istatistik {
@@ -80,12 +83,14 @@
             margin-top: 0.5rem;
             margin-right: 0.5rem;
             padding: 0.3rem 0.8rem;
-            background: #E4405F;
             color: white;
             text-decoration: none;
             border-radius: 6px;
             font-size: 0.8rem;
         }
+        .whatsapp-btn { background: #25D366; }
+        .telegram-btn { background: #0088cc; }
+        .instagram-btn { background: #E4405F; }
         .bos-mesaj {
             text-align: center;
             padding: 3rem;
@@ -108,6 +113,23 @@
         }
         .flash.success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
         .flash.danger { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            z-index: 1001;
+            animation: fadeOut 2s ease-in-out;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
         @media (max-width: 768px) {
             header { flex-direction: column; text-align: center; }
             .stats { justify-content: center; }
@@ -124,7 +146,9 @@
         </div>
         <div class="header-buttons">
             <a href="{{ url_for('araba_ekle') }}" class="btn btn-primary">+ Yeni Araba Ekle</a>
-            <a href="#" class="btn btn-instagram" onclick="tumunuPaylas()">📱 Tüm Koleksiyonu Paylaş</a>
+            <button class="btn btn-whatsapp" onclick="tumunuWhatsapp()">📱 WhatsApp'ta Paylaş</button>
+            <button class="btn btn-telegram" onclick="tumunuTelegram()">✈️ Telegram'da Paylaş</button>
+            <button class="btn btn-instagram" onclick="tumunuInstagram()">📸 Instagram İçin Kopyala</button>
             <a href="{{ url_for('logout') }}" class="btn btn-secondary">Çıkış</a>
         </div>
     </header>
@@ -164,7 +188,11 @@
                     <p>🏷️ {{ araba.marka }}</p>
                     <p>🎨 {{ araba.renk }}</p>
                     <p>📅 {{ araba.tarih.strftime('%d.%m.%Y') }}</p>
-                    <a href="#" class="paylas-btn" onclick="paylasAraba('{{ araba.isim }}', '{{ araba.marka }}', '{{ araba.renk }}')">📱 Paylaş</a>
+                    <div>
+                        <button class="paylas-btn whatsapp-btn" onclick="paylasWhatsapp('{{ araba.isim }}', '{{ araba.marka }}', '{{ araba.renk }}')">💬 WhatsApp</button>
+                        <button class="paylas-btn telegram-btn" onclick="paylasTelegram('{{ araba.isim }}', '{{ araba.marka }}', '{{ araba.renk }}')">✈️ Telegram</button>
+                        <button class="paylas-btn instagram-btn" onclick="paylasInstagram('{{ araba.isim }}', '{{ araba.marka }}', '{{ araba.renk }}')">📸 Kopyala</button>
+                    </div>
                     <a href="{{ url_for('araba_sil', araba_id=araba.id) }}" class="sil-btn" onclick="return confirm('Silmek istediğine emin misin?')">🗑️ Sil</a>
                 </div>
             </div>
@@ -184,30 +212,83 @@
         {% endfor %}
     {% endwith %}
 
+    <div id="toast" style="display: none;"></div>
+
     <script>
-        // Tek bir arabayı paylaş
-        function paylasAraba(isim, marka, renk) {
-            let markaEmoji = "";
-            if (marka == "Hot Wheels") markaEmoji = "🔥";
-            else if (marka == "Matchbox") markaEmoji = "📦";
-            else markaEmoji = "🚗";
-            
-            let mesaj = `${markaEmoji} ${isim} - ${marka} ${renk} renk! 🚗💨`;
-            let url = `https://www.instagram.com/create/story/?text=${encodeURIComponent(mesaj)}`;
-            window.open(url, '_blank');
+        function markaEmoji(marka) {
+            if (marka == "Hot Wheels") return "🔥";
+            if (marka == "Matchbox") return "📦";
+            return "🚗";
         }
         
-        // Tüm koleksiyonu paylaş
-        function tumunuPaylas() {
+        function mesajOlustur(isim, marka, renk) {
+            return `${markaEmoji(marka)} ${isim} - ${marka} ${renk} renk! 🚗💨`;
+        }
+        
+        function koleksiyonMesaji() {
             let toplam = {{ toplam_araba }};
             let markaSay = {{ marka_sayilari|length }};
             let renkSay = {{ renk_sayilari|length }};
-            let mesaj = `🚗 Diecast koleksiyonum: ${toplam} araba, ${markaSay} farklı marka, ${renkSay} farklı renk!🔥`;
-            let url = `https://www.instagram.com/create/story/?text=${encodeURIComponent(mesaj)}`;
+            return `🚗 Diecast koleksiyonum: ${toplam} araba, ${markaSay} farklı marka, ${renkSay} farklı renk! 🔥`;
+        }
+        
+        function gosterToast(mesaj) {
+            let toast = document.getElementById('toast');
+            toast.textContent = mesaj;
+            toast.style.display = 'block';
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.background = '#333';
+            toast.style.color = 'white';
+            toast.style.padding = '0.8rem 1.5rem';
+            toast.style.borderRadius = '30px';
+            toast.style.zIndex = '1001';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2000);
+        }
+        
+        // Tek araba paylaşımları
+        function paylasWhatsapp(isim, marka, renk) {
+            let mesaj = mesajOlustur(isim, marka, renk);
+            let url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
             window.open(url, '_blank');
         }
         
-        // Flash mesajları 3 saniye sonra kaybolsun
+        function paylasTelegram(isim, marka, renk) {
+            let mesaj = mesajOlustur(isim, marka, renk);
+            let url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mesaj)}`;
+            window.open(url, '_blank');
+        }
+        
+        function paylasInstagram(isim, marka, renk) {
+            let mesaj = mesajOlustur(isim, marka, renk);
+            navigator.clipboard.writeText(mesaj);
+            gosterToast('✅ Metin kopyalandı! Instagram\'da yapıştırabilirsin.');
+        }
+        
+        // Tüm koleksiyon paylaşımları
+        function tumunuWhatsapp() {
+            let mesaj = koleksiyonMesaji();
+            let url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
+            window.open(url, '_blank');
+        }
+        
+        function tumunuTelegram() {
+            let mesaj = koleksiyonMesaji();
+            let url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mesaj)}`;
+            window.open(url, '_blank');
+        }
+        
+        function tumunuInstagram() {
+            let mesaj = koleksiyonMesaji();
+            navigator.clipboard.writeText(mesaj);
+            gosterToast('✅ Metin kopyalandı! Instagram Story\'de yapıştırabilirsin.');
+        }
+        
+        // Flash mesajları
         setTimeout(() => {
             document.querySelectorAll('.flash').forEach(flash => {
                 flash.style.opacity = '0';
