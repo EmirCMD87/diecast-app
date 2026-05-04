@@ -28,9 +28,13 @@
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
+            display: inline-block;
+            text-align: center;
         }
         .btn-primary { background: #28a745; color: white; }
         .btn-secondary { background: #6c757d; color: white; }
+        .btn-instagram { background: #E4405F; color: white; }
+        .btn-whatsapp { background: #25D366; color: white; }
         .header-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
         .istatistik {
@@ -42,7 +46,7 @@
         }
         .araba-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 1.5rem;
         }
         .araba-card {
@@ -50,7 +54,9 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
         }
+        .araba-card:hover { transform: translateY(-5px); }
         .araba-card img {
             width: 100%;
             height: 200px;
@@ -58,11 +64,23 @@
         }
         .araba-info { padding: 1rem; }
         .araba-info h3 { margin-bottom: 0.5rem; color: #1e3c72; }
+        .araba-info p { color: #666; margin-bottom: 0.3rem; }
         .sil-btn {
             display: inline-block;
             margin-top: 0.5rem;
             padding: 0.3rem 0.8rem;
             background: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+        .paylas-btn {
+            display: inline-block;
+            margin-top: 0.5rem;
+            margin-right: 0.5rem;
+            padding: 0.3rem 0.8rem;
+            background: #E4405F;
             color: white;
             text-decoration: none;
             border-radius: 6px;
@@ -90,6 +108,10 @@
         }
         .flash.success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
         .flash.danger { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        @media (max-width: 768px) {
+            header { flex-direction: column; text-align: center; }
+            .stats { justify-content: center; }
+        }
     </style>
 </head>
 <body>
@@ -98,9 +120,11 @@
         <div class="stats">
             <div class="stat-card">🏎️ Toplam: <strong>{{ toplam_araba }}</strong></div>
             <div class="stat-card">🎨 Renk: <strong>{{ renk_sayilari|length }}</strong></div>
+            <div class="stat-card">🏷️ Marka: <strong>{{ marka_sayilari|length }}</strong></div>
         </div>
         <div class="header-buttons">
             <a href="{{ url_for('araba_ekle') }}" class="btn btn-primary">+ Yeni Araba Ekle</a>
+            <a href="#" class="btn btn-instagram" onclick="tumunuPaylas()">📱 Tüm Koleksiyonu Paylaş</a>
             <a href="{{ url_for('logout') }}" class="btn btn-secondary">Çıkış</a>
         </div>
     </header>
@@ -139,6 +163,8 @@
                     <h3>{{ araba.isim }}</h3>
                     <p>🏷️ {{ araba.marka }}</p>
                     <p>🎨 {{ araba.renk }}</p>
+                    <p>📅 {{ araba.tarih.strftime('%d.%m.%Y') }}</p>
+                    <a href="#" class="paylas-btn" onclick="paylasAraba('{{ araba.isim }}', '{{ araba.marka }}', '{{ araba.renk }}')">📱 Paylaş</a>
                     <a href="{{ url_for('araba_sil', araba_id=araba.id) }}" class="sil-btn" onclick="return confirm('Silmek istediğine emin misin?')">🗑️ Sil</a>
                 </div>
             </div>
@@ -147,7 +173,7 @@
         {% else %}
         <div class="bos-mesaj">
             <p>📭 Henüz araba eklememişsin.</p>
-            <a href="{{ url_for('araba_ekle') }}">+ İlk arabamı ekle</a>
+            <a href="{{ url_for('araba_ekle') }}" class="btn btn-primary">+ İlk arabamı ekle</a>
         </div>
         {% endif %}
     </div>
@@ -157,7 +183,31 @@
             <div class="flash {{ category }}">{{ message }}</div>
         {% endfor %}
     {% endwith %}
+
     <script>
+        // Tek bir arabayı paylaş
+        function paylasAraba(isim, marka, renk) {
+            let markaEmoji = "";
+            if (marka == "Hot Wheels") markaEmoji = "🔥";
+            else if (marka == "Matchbox") markaEmoji = "📦";
+            else markaEmoji = "🚗";
+            
+            let mesaj = `${markaEmoji} ${isim} - ${marka} ${renk} renk! 🚗💨`;
+            let url = `https://www.instagram.com/create/story/?text=${encodeURIComponent(mesaj)}`;
+            window.open(url, '_blank');
+        }
+        
+        // Tüm koleksiyonu paylaş
+        function tumunuPaylas() {
+            let toplam = {{ toplam_araba }};
+            let markaSay = {{ marka_sayilari|length }};
+            let renkSay = {{ renk_sayilari|length }};
+            let mesaj = `🚗 Diecast koleksiyonum: ${toplam} araba, ${markaSay} farklı marka, ${renkSay} farklı renk!🔥`;
+            let url = `https://www.instagram.com/create/story/?text=${encodeURIComponent(mesaj)}`;
+            window.open(url, '_blank');
+        }
+        
+        // Flash mesajları 3 saniye sonra kaybolsun
         setTimeout(() => {
             document.querySelectorAll('.flash').forEach(flash => {
                 flash.style.opacity = '0';
