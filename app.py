@@ -4,12 +4,17 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = "diecast_gizli_anahtar_123"
+
+# Oturum ayarları (Beni Hatırla için)
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+app.config['REMEMBER_COOKIE_SECURE'] = False  # HTTP için False, HTTPS için True
 
 # Veritabanı
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///diecast.db"
@@ -61,27 +66,39 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        username = request.form["username"]
+        username = request.form["username"].strip()
         password = request.form["password"]
         
-        if User.query.filter_by(username=username).first():
-            flash("Bu kullanıcı adı zaten alınmış!", "danger")
+        # Boş kontrol
+        if not username or not password:
+            flash("Kullanıcı adı ve şifre boş olamaz!", "danger")
+            return redirect(url_for("register"))
+        
+        # Kullanıcı adı kontrolü
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash("❌ Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.", "danger")
             return redirect(url_for("register"))
         
         hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
         new_user = User(username=username, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
         
-        flash("Kayıt başarılı! Şimdi giriş yapabilirsin.", "success")
-        return redirect(url_for("login"))
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            flash("✅ Kayıt başarılı! Şimdi giriş yapabilirsin.", "success")
+            return redirect(url_for("login"))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"❌ Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.", "danger")
+            return redirect(url_for("register"))
     
     return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
+        username = request.form["username"].strip()
         password = request.form["password"]
         
         user = User.query.filter_by(username=username).first()
@@ -89,10 +106,10 @@ def login():
         if user and check_password_hash(user.password, password):
             remember = True if request.form.get('remember') else False
             login_user(user, remember=remember)
-            flash(f"Hoş geldin, {username}!", "success")
+            flash(f"Hoş geldin, {username}! ✅", "success")
             return redirect(url_for("dashboard"))
         else:
-            flash("Kullanıcı adı veya şifre hatalı!", "danger")
+            flash("❌ Kullanıcı adı veya şifre hatalı!", "danger")
     
     return render_template("login.html")
 
@@ -100,7 +117,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash("Çıkış yapıldı.", "info")
+    flash("Çıkış yapıldı. 👋", "info")
     return redirect(url_for("login"))
 
 @app.route("/dashboard")
