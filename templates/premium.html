@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Premium Üyelik</title>
+    <style>
+        body { font-family: system-ui; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 2rem; }
+        .container { max-width: 1000px; margin: auto; background: white; border-radius: 30px; padding: 2rem; }
+        h1 { color: #1e3c72; }
+        .price { font-size: 2rem; font-weight: bold; color: #28a745; }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap: 1rem; margin: 2rem 0; }
+        .feature { background: #f0f2f5; padding: 1rem; border-radius: 15px; text-align: center; }
+        .btn { background: #f39c12; padding: 0.8rem 2rem; color: white; border: none; border-radius: 40px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Premium Üyelik 🚀</h1>
+        <div class="price">$7 / ay</div>
+        <div class="features">
+            <div class="feature">♾️ Sınırsız araba</div>
+            <div class="feature">⭐ Premium rozeti</div>
+            <div class="feature">🚫 Reklamsız</div>
+            <div class="feature">📊 Gelişmiş rapor</div>
+        </div>
+        <button class="btn" onclick="bilgiAl()">Premium'a Geç</button>
+        <p style="margin-top: 2rem;">Ödeme IBAN veya Papara ile manuel olarak alınır. İletişim: <strong>hdirarin@gmail.com</strong></p>
+    </div>
+    <script>
+        function bilgiAl() {
+            window.open("https://wa.me/905551234567?text=Premium%20üyelik%20bilgi", "_blank");
+        }
+    </script>
+</body>
+</html>
