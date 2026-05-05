@@ -204,7 +204,7 @@ def araba_sil(araba_id):
     flash(f"{araba.isim} silindi.", "info")
     return redirect(url_for("dashboard"))
 
-# ------------------- EXCEL AKTARIMI (CSV) -------------------
+# ------------------- EXCEL AKTARIMI (CSV) - SYLK hatası düzeltildi -------------------
 @app.route("/export_csv")
 @login_required
 def export_csv():
@@ -213,8 +213,8 @@ def export_csv():
     output = StringIO()
     writer = csv.writer(output)
     
-    # Başlık satırı
-    writer.writerow(['ID', 'Araba Adı', 'Marka', 'Renk', 'Eklenme Tarihi'])
+    # Başlık satırı - 'ID' yerine 'Araba_ID' yazıldı (Excel SYLK hatasını çözmek için)
+    writer.writerow(['Araba_ID', 'Araba Adı', 'Marka', 'Renk', 'Eklenme Tarihi'])
     
     for a in arabalar:
         writer.writerow([a.id, a.isim, a.marka, a.renk, a.tarih.strftime('%Y-%m-%d %H:%M')])
