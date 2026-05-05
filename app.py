@@ -18,7 +18,7 @@ app.secret_key = "diecast_gizli_anahtar_123"
 # ============ OTURUM VE ÇEREZ AYARLARI (Beni Hatırla için) ============
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
-app.config['REMEMBER_COOKIE_SECURE'] = False
+app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 # ====================================================================
