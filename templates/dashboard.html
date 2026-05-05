@@ -46,16 +46,18 @@
         
         .stats {
             display: flex;
-            gap: 1rem;
+            gap: 0.8rem;
             flex-wrap: wrap;
+            align-items: center;
         }
         
         .stat-card {
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(10px);
-            padding: 0.5rem 1.2rem;
+            padding: 0.5rem 1rem;
             border-radius: 30px;
             font-weight: 500;
+            font-size: 0.9rem;
         }
         
         .stat-card a {
@@ -65,6 +67,31 @@
         
         .stat-card a:hover {
             text-decoration: underline;
+        }
+        
+        .premium-badge {
+            background: #f39c12;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+        }
+        
+        .premium-btn {
+            background: #28a745;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .premium-btn:hover {
+            background: #218838;
         }
         
         .btn-group {
@@ -141,7 +168,6 @@
             padding: 1.5rem;
             margin-bottom: 2rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
         }
         
         .filter-title {
@@ -163,7 +189,7 @@
         
         .filter-group {
             flex: 1;
-            min-width: 180px;
+            min-width: 160px;
         }
         
         .filter-group label {
@@ -359,6 +385,11 @@
             color: #666;
         }
         
+        .empty-message a {
+            color: #1e3c72;
+            text-decoration: none;
+        }
+        
         .flash {
             position: fixed;
             top: 80px;
@@ -376,6 +407,7 @@
         
         .flash.success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
         .flash.danger { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        .flash.info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
         
         .toast {
             position: fixed;
@@ -417,6 +449,11 @@
                     <i class="fas fa-link"></i> 
                     <a href="{{ url_for('public_profile', username=current_user.username) }}" target="_blank">🔗 Profil Linkim</a>
                 </div>
+                {% if current_user.is_premium %}
+                    <div class="premium-badge"><i class="fas fa-star"></i> PREMİUM ÜYE</div>
+                {% else %}
+                    <a href="{{ url_for('premium_page') }}" class="premium-btn"><i class="fas fa-rocket"></i> PREMİUM'A GEÇ</a>
+                {% endif %}
             </div>
             <div class="btn-group">
                 <a href="{{ url_for('araba_ekle') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Yeni Araba Ekle</a>
@@ -518,7 +555,7 @@
         <div class="empty-message">
             <i class="fas fa-car" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem; display: block;"></i>
             <p>📭 Bu filtreye uygun araba bulunamadı.</p>
-            <a href="{{ url_for('dashboard') }}" style="margin-top: 1rem; display: inline-block;" class="btn btn-primary">Tüm arabaları göster</a>
+            <a href="{{ url_for('dashboard') }}">Tüm arabaları göster</a>
         </div>
         {% endif %}
     </div>
