@@ -1,12 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, Response
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
-import csv
-from io import StringIO
+import tempfile
 from datetime import datetime, timedelta
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -204,27 +206,64 @@ def araba_sil(araba_id):
     flash(f"{araba.isim} silindi.", "info")
     return redirect(url_for("dashboard"))
 
-# ------------------- EXCEL AKTARIMI (CSV) - SYLK hatası düzeltildi -------------------
-@app.route("/export_csv")
+# ------------------- EXCEL AKTARIMI (GERÇEK .xlsx) -------------------
+@app.route("/export_excel")
 @login_required
-def export_csv():
+def export_excel():
     arabalar = Araba.query.filter_by(user_id=current_user.id).all()
     
-    output = StringIO()
-    writer = csv.writer(output)
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Koleksiyonum"
     
-    # Başlık satırı - 'ID' yerine 'Araba_ID' yazıldı (Excel SYLK hatasını çözmek için)
-    writer.writerow(['Araba_ID', 'Araba Adı', 'Marka', 'Renk', 'Eklenme Tarihi'])
+    # ============ BAŞLIK STİLİ ============
+    baslik_font = Font(bold=True, color="FFFFFF", size=12)
+    baslik_fill = PatternFill(start_color="1E3C72", end_color="1E3C72", fill_type="solid")
+    baslik_align = Alignment(horizontal="center", vertical="center")
     
-    for a in arabalar:
-        writer.writerow([a.id, a.isim, a.marka, a.renk, a.tarih.strftime('%Y-%m-%d %H:%M')])
+    # Başlık satırı
+    basliklar = ["ID", "Araba Adı", "Marka", "Renk", "Eklenme Tarihi"]
+    for col, baslik in enumerate(basliklar, 1):
+        hucre = ws.cell(row=1, column=col, value=baslik)
+        hucre.font = baslik_font
+        hucre.fill = baslik_fill
+        hucre.alignment = baslik_align
     
-    output.seek(0)
+    # ============ VERİLER ============
+    for row, araba in enumerate(arabalar, 2):
+        ws.cell(row=row, column=1, value=araba.id)
+        ws.cell(row=row, column=2, value=araba.isim)
+        ws.cell(row=row, column=3, value=araba.marka)
+        ws.cell(row=row, column=4, value=araba.renk)
+        ws.cell(row=row, column=5, value=araba.tarih.strftime('%Y-%m-%d %H:%M'))
     
-    return Response(
-        output,
-        mimetype="text/csv",
-        headers={"Content-Disposition": f"attachment;filename=koleksiyonum_{datetime.now().strftime('%Y%m%d')}.csv"}
+    # ============ SÜTUN GENİŞLİKLERİ ============
+    sutun_genislikleri = [10, 25, 15, 15, 20]
+    for col, genislik in enumerate(sutun_genislikleri, 1):
+        ws.column_dimensions[get_column_letter(col)].width = genislik
+    
+    # ============ HÜCRE KENARLIKLARI ============
+    thin_border = Border(
+        left=Side(style='thin'),
+        right=Side(style='thin'),
+        top=Side(style='thin'),
+        bottom=Side(style='thin')
+    )
+    
+    for row in range(1, len(arabalar) + 2):
+        for col in range(1, 6):
+            ws.cell(row=row, column=col).border = thin_border
+    
+    # ============ DOSYAYI KAYDET ============
+    temp = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
+    wb.save(temp.name)
+    temp.close()
+    
+    return send_file(
+        temp.name,
+        as_attachment=True,
+        download_name=f"koleksiyonum_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
 
 # ------------------- VERİTABANI OLUŞTUR -------------------
