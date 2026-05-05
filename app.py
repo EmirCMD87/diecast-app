@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
+import csv
+from io import StringIO
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
@@ -14,7 +16,7 @@ app.secret_key = "diecast_gizli_anahtar_123"
 # ============ OTURUM VE ÇEREZ AYARLARI (Beni Hatırla için) ============
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
-app.config['REMEMBER_COOKIE_SECURE'] = False  # HTTPS kullanmıyorsan False, HTTPS'de True yap
+app.config['REMEMBER_COOKIE_SECURE'] = False
 app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 # ====================================================================
@@ -201,6 +203,29 @@ def araba_sil(araba_id):
     
     flash(f"{araba.isim} silindi.", "info")
     return redirect(url_for("dashboard"))
+
+# ------------------- EXCEL AKTARIMI (CSV) -------------------
+@app.route("/export_csv")
+@login_required
+def export_csv():
+    arabalar = Araba.query.filter_by(user_id=current_user.id).all()
+    
+    output = StringIO()
+    writer = csv.writer(output)
+    
+    # Başlık satırı
+    writer.writerow(['ID', 'Araba Adı', 'Marka', 'Renk', 'Eklenme Tarihi'])
+    
+    for a in arabalar:
+        writer.writerow([a.id, a.isim, a.marka, a.renk, a.tarih.strftime('%Y-%m-%d %H:%M')])
+    
+    output.seek(0)
+    
+    return Response(
+        output,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment;filename=koleksiyonum_{datetime.now().strftime('%Y%m%d')}.csv"}
+    )
 
 # ------------------- VERİTABANI OLUŞTUR -------------------
 with app.app_context():
