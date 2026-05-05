@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Paneli</title>
+    <style>
+        body { font-family: system-ui; background: #f5f5f5; padding: 2rem; }
+        table { width: 100%; background: white; border-radius: 20px; }
+        th, td { padding: 0.8rem; border-bottom: 1px solid #ddd; }
+        th { background: #1e3c72; color: white; }
+        .premium-btn { background: #28a745; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <h2>Admin Paneli</h2>
+    <table>
+        <thead><tr><th>ID</th><th>Kullanıcı Adı</th><th>Premium</th><th>Süre</th><th>İşlem</th></tr></thead>
+        <tbody>
+            {% for user in kullanicilar %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ "✅ Evet" if user.is_premium else "❌ Hayır" }}</td>
+                <td>{{ user.premium_until.strftime('%d.%m.%Y') if user.premium_until else "-" }}</td>
+                <td>
+                    {% if not user.is_premium %}
+                    <a href="{{ url_for('make_premium', user_id=user.id) }}" class="premium-btn">⭐ Premium Yap</a>
+                    {% else %}⭐ Aktif{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br><a href="{{ url_for('dashboard') }}">← Dashboard'a dön</a>
+</body>
+</html>
