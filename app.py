@@ -128,15 +128,33 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    arabalar = Araba.query.filter_by(user_id=current_user.id).order_by(Araba.tarih.desc()).all()
+    # Filtreleme parametrelerini al
+    marka_filtre = request.args.get('marka', '')
+    renk_filtre = request.args.get('renk', '')
+    arama = request.args.get('arama', '')
     
-    toplam_araba = len(arabalar)
-    renkler = [araba.renk for araba in arabalar]
+    # Sorguyu oluştur
+    query = Araba.query.filter_by(user_id=current_user.id)
+    
+    if marka_filtre:
+        query = query.filter_by(marka=marka_filtre)
+    if renk_filtre:
+        query = query.filter_by(renk=renk_filtre)
+    if arama:
+        query = query.filter(Araba.isim.contains(arama))
+    
+    arabalar = query.order_by(Araba.tarih.desc()).all()
+    
+    # Tüm koleksiyon üzerinden istatistikler (filtrelenmemiş)
+    tum_arabalar = Araba.query.filter_by(user_id=current_user.id).all()
+    
+    toplam_araba = len(tum_arabalar)
+    renkler = [araba.renk for araba in tum_arabalar]
     renk_sayilari = {}
     for renk in renkler:
         renk_sayilari[renk] = renk_sayilari.get(renk, 0) + 1
     
-    markalar = [araba.marka for araba in arabalar]
+    markalar = [araba.marka for araba in tum_arabalar]
     marka_sayilari = {}
     for marka in markalar:
         marka_sayilari[marka] = marka_sayilari.get(marka, 0) + 1
@@ -145,7 +163,10 @@ def dashboard():
                          arabalar=arabalar, 
                          toplam_araba=toplam_araba,
                          renk_sayilari=renk_sayilari,
-                         marka_sayilari=marka_sayilari)
+                         marka_sayilari=marka_sayilari,
+                         secili_marka=marka_filtre,
+                         secili_renk=renk_filtre,
+                         arama_kelimesi=arama)
 
 @app.route("/araba_ekle", methods=["GET", "POST"])
 @login_required
@@ -206,7 +227,7 @@ def araba_sil(araba_id):
     flash(f"{araba.isim} silindi.", "info")
     return redirect(url_for("dashboard"))
 
-# ------------------- EXCEL AKTARIMI (GERÇEK .xlsx) -------------------
+# ------------------- EXCEL AKTARIMI -------------------
 @app.route("/export_excel")
 @login_required
 def export_excel():
@@ -216,12 +237,10 @@ def export_excel():
     ws = wb.active
     ws.title = "Koleksiyonum"
     
-    # ============ BAŞLIK STİLİ ============
     baslik_font = Font(bold=True, color="FFFFFF", size=12)
     baslik_fill = PatternFill(start_color="1E3C72", end_color="1E3C72", fill_type="solid")
     baslik_align = Alignment(horizontal="center", vertical="center")
     
-    # Başlık satırı
     basliklar = ["ID", "Araba Adı", "Marka", "Renk", "Eklenme Tarihi"]
     for col, baslik in enumerate(basliklar, 1):
         hucre = ws.cell(row=1, column=col, value=baslik)
@@ -229,7 +248,6 @@ def export_excel():
         hucre.fill = baslik_fill
         hucre.alignment = baslik_align
     
-    # ============ VERİLER ============
     for row, araba in enumerate(arabalar, 2):
         ws.cell(row=row, column=1, value=araba.id)
         ws.cell(row=row, column=2, value=araba.isim)
@@ -237,12 +255,10 @@ def export_excel():
         ws.cell(row=row, column=4, value=araba.renk)
         ws.cell(row=row, column=5, value=araba.tarih.strftime('%Y-%m-%d %H:%M'))
     
-    # ============ SÜTUN GENİŞLİKLERİ ============
     sutun_genislikleri = [10, 25, 15, 15, 20]
     for col, genislik in enumerate(sutun_genislikleri, 1):
         ws.column_dimensions[get_column_letter(col)].width = genislik
     
-    # ============ HÜCRE KENARLIKLARI ============
     thin_border = Border(
         left=Side(style='thin'),
         right=Side(style='thin'),
@@ -254,7 +270,6 @@ def export_excel():
         for col in range(1, 6):
             ws.cell(row=row, column=col).border = thin_border
     
-    # ============ DOSYAYI KAYDET ============
     temp = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
     wb.save(temp.name)
     temp.close()
