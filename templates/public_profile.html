@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ user.username }} - Diecast Koleksiyonu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .profile-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 500;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem 2rem;
+        }
+
+        .car-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .car-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .car-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: #f0f2f5;
+        }
+
+        .car-info {
+            padding: 1.2rem;
+        }
+
+        .car-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1e3c72;
+            margin-bottom: 0.5rem;
+        }
+
+        .car-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .car-detail {
+            background: #f0f2f5;
+            padding: 0.25rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 20px;
+            color: #666;
+        }
+
+        .footer-cta {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .btn-instagram {
+            display: inline-block;
+            padding: 0.7rem 1.5rem;
+            background: #E4405F;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-instagram:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-header">
+        <h1>🚗 {{ user.username }}'ün Diecast Koleksiyonu</h1>
+        <div class="stats">
+            <div class="stat-card">🏎️ {{ arabalar|length }} Araba</div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% if arabalar %}
+        <div class="car-grid">
+            {% for araba in arabalar %}
+            <div class="car-card">
+                <img class="car-image" src="/{{ araba.resim_yolu }}" alt="{{ araba.isim }}">
+                <div class="car-info">
+                    <h3 class="car-title">{{ araba.isim }}</h3>
+                    <div class="car-details">
+                        <span class="car-detail">🏷️ {{ araba.marka }}</span>
+                        <span class="car-detail">🎨 {{ araba.renk }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-message">
+            <p>📭 Henüz hiç araba eklenmemiş.</p>
+        </div>
+        {% endif %}
+
+        <div class="footer-cta">
+            <a href="https://diecastdiy.com" class="btn-instagram">
+                📸 Kendi koleksiyonunu oluştur
+            </a>
+        </div>
+    </div>
+</body>
+</html>
