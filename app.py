@@ -67,7 +67,7 @@ def load_user(user_id):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user.username != "EmirCMD87":
+        if current_user.username != "emir":
             flash("Bu sayfaya erişim yetkin yok", "danger")
             return redirect(url_for("dashboard"))
         if not session.get('admin_verified'):
