@@ -4,33 +4,45 @@
     <meta charset="UTF-8">
     <title>Admin Paneli</title>
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: system-ui; background: #f5f5f5; padding: 2rem; }
-        table { width: 100%; background: white; border-radius: 20px; }
-        th, td { padding: 0.8rem; border-bottom: 1px solid #ddd; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h2 { margin-bottom: 1rem; color: #1e3c72; }
+        table { width: 100%; background: white; border-radius: 20px; border-collapse: collapse; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        th, td { padding: 0.8rem; border-bottom: 1px solid #ddd; text-align: left; }
         th { background: #1e3c72; color: white; }
-        .premium-btn { background: #28a745; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; text-decoration: none; }
+        .premium-btn { background: #28a745; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; text-decoration: none; font-size: 0.8rem; display: inline-block; }
+        .remove-btn { background: #dc3545; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; text-decoration: none; font-size: 0.8rem; display: inline-block; }
+        .back-link { display: inline-block; margin-top: 1rem; color: #1e3c72; text-decoration: none; }
     </style>
 </head>
 <body>
-    <h2>Admin Paneli</h2>
-    <table>
-        <thead><tr><th>ID</th><th>Kullanıcı Adı</th><th>Premium</th><th>Süre</th><th>İşlem</th></tr></thead>
-        <tbody>
-            {% for user in kullanicilar %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.username }}</td>
-                <td>{{ "✅ Evet" if user.is_premium else "❌ Hayır" }}</td>
-                <td>{{ user.premium_until.strftime('%d.%m.%Y') if user.premium_until else "-" }}</td>
-                <td>
-                    {% if not user.is_premium %}
-                    <a href="{{ url_for('make_premium', user_id=user.id) }}" class="premium-btn">⭐ Premium Yap</a>
-                    {% else %}⭐ Aktif{% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <br><a href="{{ url_for('dashboard') }}">← Dashboard'a dön</a>
+    <div class="container">
+        <h2>👑 Admin Paneli - Kullanıcılar</h2>
+        <table>
+            <thead>
+                <tr><th>ID</th><th>Kullanıcı Adı</th><th>Premium</th><th>Premium Süresi</th><th>İşlem</th></tr>
+            </thead>
+            <tbody>
+                {% for user in kullanicilar %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ "✅ Evet" if user.is_premium else "❌ Hayır" }}</td>
+                    <td>{{ user.premium_until.strftime('%d.%m.%Y') if user.premium_until else "-" }}</td>
+                    <td>
+                        {% if not user.is_premium %}
+                            <a href="{{ url_for('make_premium', user_id=user.id) }}" class="premium-btn">⭐ Premium Yap</a>
+                        {% else %}
+                            <a href="{{ url_for('remove_premium', user_id=user.id) }}" class="remove-btn">❌ Premiumu Kaldır</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br>
+        <a href="{{ url_for('dashboard') }}" class="back-link">← Dashboard'a dön</a>
+    </div>
 </body>
 </html>
