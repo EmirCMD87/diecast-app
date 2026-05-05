@@ -35,6 +35,7 @@
         }
         .btn-primary { background: #28a745; color: white; }
         .btn-secondary { background: #6c757d; color: white; }
+        .btn-excel { background: #28a745; color: white; }
         .btn-whatsapp { background: #25D366; color: white; }
         .btn-telegram { background: #0088cc; color: white; }
         .btn-instagram { background: #E4405F; color: white; }
@@ -146,6 +147,7 @@
         </div>
         <div class="header-buttons">
             <a href="{{ url_for('araba_ekle') }}" class="btn btn-primary">+ Yeni Araba Ekle</a>
+            <a href="{{ url_for('export_csv') }}" class="btn btn-excel">📊 Excel'e Aktar</a>
             <button class="btn btn-whatsapp" onclick="tumunuWhatsapp()">📱 WhatsApp'ta Paylaş</button>
             <button class="btn btn-telegram" onclick="tumunuTelegram()">✈️ Telegram'da Paylaş</button>
             <button class="btn btn-instagram" onclick="tumunuInstagram()">📸 Instagram İçin Kopyala</button>
@@ -236,21 +238,11 @@
             let toast = document.getElementById('toast');
             toast.textContent = mesaj;
             toast.style.display = 'block';
-            toast.style.position = 'fixed';
-            toast.style.bottom = '20px';
-            toast.style.left = '50%';
-            toast.style.transform = 'translateX(-50%)';
-            toast.style.background = '#333';
-            toast.style.color = 'white';
-            toast.style.padding = '0.8rem 1.5rem';
-            toast.style.borderRadius = '30px';
-            toast.style.zIndex = '1001';
             setTimeout(() => {
                 toast.style.display = 'none';
             }, 2000);
         }
         
-        // Tek araba paylaşımları
         function paylasWhatsapp(isim, marka, renk) {
             let mesaj = mesajOlustur(isim, marka, renk);
             let url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
@@ -269,7 +261,6 @@
             gosterToast('✅ Metin kopyalandı! Instagram\'da yapıştırabilirsin.');
         }
         
-        // Tüm koleksiyon paylaşımları
         function tumunuWhatsapp() {
             let mesaj = koleksiyonMesaji();
             let url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
@@ -278,17 +269,14 @@
         
         function tumunuTelegram() {
             let mesaj = koleksiyonMesaji();
-            let url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mesaj)}`;
-            window.open(url, '_blank');
-        }
-        
+            let url = `https://t.me/share/url?url=${encodeURIComponent(window.location.hre   
+
         function tumunuInstagram() {
             let mesaj = koleksiyonMesaji();
             navigator.clipboard.writeText(mesaj);
             gosterToast('✅ Metin kopyalandı! Instagram Story\'de yapıştırabilirsin.');
         }
         
-        // Flash mesajları
         setTimeout(() => {
             document.querySelectorAll('.flash').forEach(flash => {
                 flash.style.opacity = '0';
