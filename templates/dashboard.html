@@ -269,8 +269,10 @@
         
         function tumunuTelegram() {
             let mesaj = koleksiyonMesaji();
-            let url = `https://t.me/share/url?url=${encodeURIComponent(window.location.hre   
-
+            let url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mesaj)}`;
+            window.open(url, '_blank');
+        }
+        
         function tumunuInstagram() {
             let mesaj = koleksiyonMesaji();
             navigator.clipboard.writeText(mesaj);
