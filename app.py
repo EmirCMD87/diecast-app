@@ -18,11 +18,11 @@ app.secret_key = "diecast_gizli_anahtar_123"
 ADMIN_PASSWORD = "emirdiecast2156"
 
 # ============ OTURUM VE ÇEREZ AYARLARI ============
-app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=730)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=730)
 
 # Veritabanı
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///diecast.db"
