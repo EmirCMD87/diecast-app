@@ -35,7 +35,7 @@
         }
         .btn-primary { background: #28a745; color: white; }
         .btn-secondary { background: #6c757d; color: white; }
-        .btn-excel { background: #28a745; color: white; }
+        .btn-excel { background: #1e3c72; color: white; }
         .btn-whatsapp { background: #25D366; color: white; }
         .btn-telegram { background: #0088cc; color: white; }
         .btn-instagram { background: #E4405F; color: white; }
@@ -147,7 +147,7 @@
         </div>
         <div class="header-buttons">
             <a href="{{ url_for('araba_ekle') }}" class="btn btn-primary">+ Yeni Araba Ekle</a>
-            <a href="{{ url_for('export_csv') }}" class="btn btn-excel">📊 Excel'e Aktar</a>
+            <a href="{{ url_for('export_excel') }}" class="btn btn-excel">📊 Excel'e Aktar (.xlsx)</a>
             <button class="btn btn-whatsapp" onclick="tumunuWhatsapp()">📱 WhatsApp'ta Paylaş</button>
             <button class="btn btn-telegram" onclick="tumunuTelegram()">✈️ Telegram'da Paylaş</button>
             <button class="btn btn-instagram" onclick="tumunuInstagram()">📸 Instagram İçin Kopyala</button>
@@ -276,7 +276,7 @@
         function tumunuInstagram() {
             let mesaj = koleksiyonMesaji();
             navigator.clipboard.writeText(mesaj);
-            gosterToast('✅ Metin kopyalandı! Instagram Story\'de yapıştırabilirsin.');
+            gosterToast('✅ Metin kopyalandı! Instagram\'da yapıştırabilirsin.');
         }
         
         setTimeout(() => {
