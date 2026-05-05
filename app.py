@@ -15,15 +15,14 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = "diecast_gizli_anahtar_123"
-ADMIN_PASSWORD = "DiecastEmir2156"   # 🔐 İstediğin şifreyi buraya yaz!
+ADMIN_PASSWORD = "diecast_admin_2025"
 
-# ============ OTURUM VE ÇEREZ AYARLARI (Beni Hatırla için) ============
-app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=90)
+# ============ OTURUM VE ÇEREZ AYARLARI ============
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
-app.config['REMEMBER_COOKIE_SECURE'] = True   # HTTPS için True
+app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=90)
-# ====================================================================
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 
 # Veritabanı
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///diecast.db"
@@ -68,7 +67,7 @@ def load_user(user_id):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user.username != "emir":
+        if current_user.username != "EmirCMD87":
             flash("Bu sayfaya erişim yetkin yok", "danger")
             return redirect(url_for("dashboard"))
         if not session.get('admin_verified'):
@@ -80,7 +79,7 @@ def admin_required(f):
 def uploaded_file(filename):
     return send_from_directory('uploads', filename)
 
-# ------------------- ANA ROTALAR -------------------
+# ------------------- ROTALAR -------------------
 @app.route("/")
 def index():
     return redirect(url_for("login"))
@@ -97,21 +96,16 @@ def register():
         
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            flash("❌ Bu kullanıcı adı zaten alınmış! Lütfen başka bir kullanıcı adı seçin.", "danger")
+            flash("❌ Bu kullanıcı adı zaten alınmış!", "danger")
             return redirect(url_for("register"))
         
         hashed_password = generate_password_hash(password, method="pbkdf2:sha256")
         new_user = User(username=username, password=hashed_password)
-        
-        try:
-            db.session.add(new_user)
-            db.session.commit()
-            flash("✅ Kayıt başarılı! Şimdi giriş yapabilirsin.", "success")
-            return redirect(url_for("login"))
-        except:
-            db.session.rollback()
-            flash("❌ Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.", "danger")
-            return redirect(url_for("register"))
+        db.session.add(new_user)
+        db.session.commit()
+        flash("✅ Kayıt başarılı! Şimdi giriş yapabilirsin.", "success")
+        return redirect(url_for("login"))
+    
     return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
@@ -172,11 +166,13 @@ def dashboard():
 @app.route("/araba_ekle", methods=["GET", "POST"])
 @login_required
 def araba_ekle():
+    # Premium değilse ve 20'den fazla arabası varsa engelle
     if not current_user.is_premium:
         araba_sayisi = Araba.query.filter_by(user_id=current_user.id).count()
         if araba_sayisi >= 20:
             flash("❌ Ücretsiz kullanıcılar en fazla 20 araba ekleyebilir. Premium'a geçmek için iletişime geçin.", "danger")
             return redirect(url_for("dashboard"))
+    
     if request.method == "POST":
         isim = request.form["isim"]
         marka = request.form["marka"]
@@ -186,7 +182,7 @@ def araba_ekle():
             flash("Resim seçmediniz!", "danger")
             return redirect(request.url)
         if not allowed_file(dosya.filename):
-            flash("Sadece resim dosyaları yüklenebilir (png, jpg, jpeg, gif, webp)", "danger")
+            flash("Sadece resim dosyaları yüklenebilir!", "danger")
             return redirect(request.url)
         filename = secure_filename(f"{current_user.id}_{datetime.now().timestamp()}_{dosya.filename}")
         dosya_yolu = os.path.join(app.config["UPLOAD_FOLDER"], filename)
@@ -196,6 +192,7 @@ def araba_ekle():
         db.session.commit()
         flash(f"{isim} başarıyla eklendi!", "success")
         return redirect(url_for("dashboard"))
+    
     return render_template("araba_ekle.html")
 
 @app.route("/araba_sil/<int:araba_id>")
@@ -239,9 +236,8 @@ def export_excel():
     return send_file(temp.name, as_attachment=True, download_name=f"koleksiyonum_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx", mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 @app.route("/premium")
-@login_required
 def premium_page():
-    return render_template("premium.html")
+    return render_template("premium_page.html")
 
 @app.route('/@<username>')
 def public_profile(username):
@@ -249,6 +245,7 @@ def public_profile(username):
     arabalar = Araba.query.filter_by(user_id=user.id).order_by(Araba.tarih.desc()).all()
     return render_template('public_profile.html', user=user, arabalar=arabalar)
 
+# ------------------- ADMIN PANELİ -------------------
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
@@ -277,6 +274,17 @@ def make_premium(user_id):
     user.premium_until = datetime.now() + timedelta(days=30)
     db.session.commit()
     flash(f"{user.username} artık PREMIUM!", "success")
+    return redirect(url_for("admin_panel"))
+
+@app.route("/remove_premium/<int:user_id>")
+@login_required
+@admin_required
+def remove_premium(user_id):
+    user = User.query.get_or_404(user_id)
+    user.is_premium = False
+    user.premium_until = None
+    db.session.commit()
+    flash(f"{user.username} artık PREMIUM değil.", "warning")
     return redirect(url_for("admin_panel"))
 
 # ------------------- VERİTABANI OLUŞTUR -------------------
