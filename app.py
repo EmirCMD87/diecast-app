@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = "diecast_gizli_anahtar_123"
-ADMIN_PASSWORD = "diecast_admin_2025"
+ADMIN_PASSWORD = "emirdiecast2156"
 
 # ============ OTURUM VE ÇEREZ AYARLARI ============
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
