@@ -41,6 +41,43 @@
         .btn-instagram { background: #E4405F; color: white; }
         .header-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .filtreleme {
+            background: white;
+            border-radius: 15px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .filtreleme form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        .filtreleme .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        .filtreleme label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .filtreleme input, .filtreleme select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .filtreleme button {
+            padding: 0.5rem 1rem;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
         .istatistik {
             background: white;
             border-radius: 15px;
@@ -134,6 +171,7 @@
         @media (max-width: 768px) {
             header { flex-direction: column; text-align: center; }
             .stats { justify-content: center; }
+            .filtreleme form { flex-direction: column; }
         }
     </style>
 </head>
@@ -147,7 +185,7 @@
         </div>
         <div class="header-buttons">
             <a href="{{ url_for('araba_ekle') }}" class="btn btn-primary">+ Yeni Araba Ekle</a>
-            <a href="{{ url_for('export_excel') }}" class="btn btn-excel">📊 Excel'e Aktar (.xlsx)</a>
+            <a href="{{ url_for('export_excel') }}" class="btn btn-excel">📊 Excel'e Aktar</a>
             <button class="btn btn-whatsapp" onclick="tumunuWhatsapp()">📱 WhatsApp'ta Paylaş</button>
             <button class="btn btn-telegram" onclick="tumunuTelegram()">✈️ Telegram'da Paylaş</button>
             <button class="btn btn-instagram" onclick="tumunuInstagram()">📸 Instagram İçin Kopyala</button>
@@ -156,6 +194,38 @@
     </header>
 
     <div class="container">
+        <!-- FİLTRELEME BÖLÜMÜ -->
+        <div class="filtreleme">
+            <form method="GET" action="{{ url_for('dashboard') }}">
+                <div class="form-group">
+                    <label>🔍 Araba Adı</label>
+                    <input type="text" name="arama" placeholder="Araba ara..." value="{{ arama_kelimesi }}">
+                </div>
+                <div class="form-group">
+                    <label>🏷️ Marka</label>
+                    <select name="marka">
+                        <option value="">Tümü</option>
+                        <option value="Hot Wheels" {% if secili_marka == 'Hot Wheels' %}selected{% endif %}>🔥 Hot Wheels</option>
+                        <option value="Matchbox" {% if secili_marka == 'Matchbox' %}selected{% endif %}>📦 Matchbox</option>
+                        <option value="Diğer" {% if secili_marka == 'Diğer' %}selected{% endif %}>🚗 Diğer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🎨 Renk</label>
+                    <select name="renk">
+                        <option value="">Tümü</option>
+                        {% for renk in renk_sayilari.keys() %}
+                        <option value="{{ renk }}" {% if secili_renk == renk %}selected{% endif %}>{{ renk }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit">🔍 Filtrele</button>
+                    <a href="{{ url_for('dashboard') }}" style="display: inline-block; margin-left: 0.5rem; padding: 0.5rem 1rem; background: #6c757d; color: white; border-radius: 8px; text-decoration: none;">Temizle</a>
+                </div>
+            </form>
+        </div>
+
         {% if marka_sayilari %}
         <div class="istatistik">
             <h3>🏷️ Markalar</h3>
@@ -202,8 +272,8 @@
         </div>
         {% else %}
         <div class="bos-mesaj">
-            <p>📭 Henüz araba eklememişsin.</p>
-            <a href="{{ url_for('araba_ekle') }}" class="btn btn-primary">+ İlk arabamı ekle</a>
+            <p>📭 Bu filtreye uygun araba bulunamadı.</p>
+            <a href="{{ url_for('dashboard') }}">Tüm arabaları göster</a>
         </div>
         {% endif %}
     </div>
