@@ -15,14 +15,14 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = "diecast_gizli_anahtar_123"
-ADMIN_PASSWORD = "diecast_admin_2025"   # 🔐 İstediğin şifreyi buraya yaz!
+ADMIN_PASSWORD = "DiecastEmir2156"   # 🔐 İstediğin şifreyi buraya yaz!
 
 # ============ OTURUM VE ÇEREZ AYARLARI (Beni Hatırla için) ============
-app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=90)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['REMEMBER_COOKIE_SECURE'] = True   # HTTPS için True
 app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=90)
 # ====================================================================
 
 # Veritabanı
