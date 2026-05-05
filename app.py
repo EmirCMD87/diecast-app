@@ -18,7 +18,7 @@ app.secret_key = "diecast_gizli_anahtar_123"
 # ============ OTURUM VE ÇEREZ AYARLARI (Beni Hatırla için) ============
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
-app.config['REMEMBER_COOKIE_SECURE'] = True
+app.config['REMEMBER_COOKIE_SECURE'] = True   # HTTPS için True
 app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)
 # ====================================================================
@@ -280,6 +280,15 @@ def export_excel():
         download_name=f"koleksiyonum_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
+
+
+# ---------- 🔥 HERKESE AÇIK PROFİL (PUBLIC PROFILE) ----------
+@app.route('/@<username>')
+def public_profile(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    arabalar = Araba.query.filter_by(user_id=user.id).order_by(Araba.tarih.desc()).all()
+    return render_template('public_profile.html', user=user, arabalar=arabalar)
+
 
 # ------------------- VERİTABANI OLUŞTUR -------------------
 with app.app_context():
