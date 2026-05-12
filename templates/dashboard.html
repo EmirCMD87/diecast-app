@@ -7,25 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
-            min-height: 100vh;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%); min-height: 100vh; }
         .header {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
             padding: 1.5rem 2rem;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-        
         .header-content {
             max-width: 1400px;
             margin: 0 auto;
@@ -35,21 +24,8 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
-        
-        .header h1 {
-            font-size: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .stats {
-            display: flex;
-            gap: 0.8rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        
+        .header h1 { font-size: 1.8rem; display: flex; align-items: center; gap: 0.5rem; }
+        .stats { display: flex; gap: 0.8rem; flex-wrap: wrap; align-items: center; }
         .stat-card {
             background: rgba(255,255,255,0.15);
             backdrop-filter: blur(10px);
@@ -58,39 +34,8 @@
             font-weight: 500;
             font-size: 0.9rem;
         }
-        
-        .stat-card a {
-            color: white;
-            text-decoration: none;
-        }
-        
-        .premium-badge {
-            background: #f39c12;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: inline-block;
-        }
-        
-        .premium-btn {
-            background: #28a745;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 30px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            display: inline-block;
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-        
+        .stat-card a { color: white; text-decoration: none; }
+        .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
         .btn {
             padding: 0.6rem 1.2rem;
             border-radius: 30px;
@@ -104,25 +49,14 @@
             align-items: center;
             gap: 0.5rem;
         }
-        
         .btn-primary { background: #28a745; color: white; }
         .btn-excel { background: #1e3c72; color: white; }
         .btn-whatsapp { background: #25D366; color: white; }
         .btn-telegram { background: #0088cc; color: white; }
         .btn-instagram { background: #E4405F; color: white; }
         .btn-secondary { background: #6c757d; color: white; }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.05);
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-        
+        .btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
         .filter-card {
             background: white;
             border-radius: 20px;
@@ -130,208 +64,39 @@
             margin-bottom: 2rem;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-        
-        .filter-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #1e3c72;
-            margin-bottom: 1rem;
-        }
-        
-        .filter-form {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: flex-end;
-        }
-        
-        .filter-group {
-            flex: 1;
-            min-width: 140px;
-        }
-        
-        .filter-group label {
-            display: block;
-            margin-bottom: 0.4rem;
-            font-weight: 500;
-            font-size: 0.85rem;
-            color: #666;
-        }
-        
-        .filter-group input,
-        .filter-group select {
-            width: 100%;
-            padding: 0.7rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            font-size: 0.9rem;
-        }
-        
-        .filter-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .filter-actions button {
-            padding: 0.7rem 1.5rem;
-            background: #1e3c72;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-        
-        .filter-actions a {
-            padding: 0.7rem 1.5rem;
-            background: #6c757d;
-            color: white;
-            border-radius: 12px;
-            text-decoration: none;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-        
-        .stat-box {
-            background: white;
-            border-radius: 20px;
-            padding: 1.2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        
-        .stat-box h3 {
-            font-size: 1rem;
-            color: #666;
-            margin-bottom: 0.8rem;
-        }
-        
-        .stat-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.6rem;
-        }
-        
-        .stat-tag {
-            background: #f0f2f5;
-            padding: 0.4rem 1rem;
-            border-radius: 30px;
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        
-        .cars-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-        
-        .car-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            transition: all 0.3s ease;
-        }
-        
-        .car-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        
-        .car-image {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-        }
-        
-        .car-info {
-            padding: 1.2rem;
-        }
-        
-        .car-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #1e3c72;
-            margin-bottom: 0.5rem;
-        }
-        
-        .car-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin-bottom: 0.8rem;
-        }
-        
-        .car-detail {
-            background: #f0f2f5;
-            padding: 0.25rem 0.7rem;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-        
-        .car-date {
-            font-size: 0.7rem;
-            color: #999;
-            margin-bottom: 0.8rem;
-        }
-        
-        .car-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.8rem;
-        }
-        
-        .car-actions button,
-        .car-actions a {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-        }
-        
+        .filter-title { display: flex; align-items: center; gap: 0.5rem; font-size: 1.2rem; font-weight: 600; color: #1e3c72; margin-bottom: 1rem; }
+        .filter-form { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+        .filter-group { flex: 1; min-width: 140px; }
+        .filter-group label { display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.85rem; color: #666; }
+        .filter-group input, .filter-group select { width: 100%; padding: 0.7rem 1rem; border: 1px solid #ddd; border-radius: 12px; font-size: 0.9rem; }
+        .filter-actions { display: flex; gap: 0.5rem; }
+        .filter-actions button { padding: 0.7rem 1.5rem; background: #1e3c72; color: white; border: none; border-radius: 12px; cursor: pointer; }
+        .filter-actions a { padding: 0.7rem 1.5rem; background: #6c757d; color: white; border-radius: 12px; text-decoration: none; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-box { background: white; border-radius: 20px; padding: 1.2rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .stat-box h3 { font-size: 1rem; color: #666; margin-bottom: 0.8rem; }
+        .stat-tags { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        .stat-tag { background: #f0f2f5; padding: 0.4rem 1rem; border-radius: 30px; font-size: 0.85rem; font-weight: 500; }
+        .cars-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .car-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all 0.3s ease; }
+        .car-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .car-image { width: 100%; height: 220px; object-fit: cover; }
+        .car-info { padding: 1.2rem; }
+        .car-title { font-size: 1.2rem; font-weight: 700; color: #1e3c72; margin-bottom: 0.5rem; }
+        .car-details { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-bottom: 0.8rem; }
+        .car-detail { background: #f0f2f5; padding: 0.25rem 0.7rem; border-radius: 30px; font-size: 0.75rem; font-weight: 500; }
+        .car-date { font-size: 0.7rem; color: #999; margin-bottom: 0.8rem; }
+        .car-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem; }
+        .car-actions button, .car-actions a { padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 500; text-decoration: none; border: none; cursor: pointer; }
         .btn-wa { background: #25D366; color: white; }
         .btn-tg { background: #0088cc; color: white; }
         .btn-ig { background: #E4405F; color: white; }
         .btn-delete { background: #dc3545; color: white; }
-        
-        .empty-message {
-            text-align: center;
-            padding: 3rem;
-            background: white;
-            border-radius: 20px;
-            color: #666;
-        }
-        
-        .flash {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            padding: 1rem;
-            border-radius: 10px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        }
-        
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
+        .empty-message { text-align: center; padding: 3rem; background: white; border-radius: 20px; color: #666; }
+        .flash { position: fixed; top: 80px; right: 20px; padding: 1rem; border-radius: 10px; z-index: 1000; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .flash.success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
         .flash.danger { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
-        
         @media (max-width: 768px) {
             .header-content { flex-direction: column; text-align: center; }
             .filter-form { flex-direction: column; }
@@ -353,11 +118,6 @@
                     <i class="fas fa-link"></i> 
                     <a href="{{ url_for('public_profile', username=current_user.username) }}" target="_blank">Profil Linkim</a>
                 </div>
-                {% if current_user.is_premium %}
-                    <div class="premium-badge"><i class="fas fa-star"></i> PREMİUM ÜYE</div>
-                {% else %}
-                    <a href="{{ url_for('premium_page') }}" class="premium-btn"><i class="fas fa-rocket"></i> PREMİUM'A GEÇ</a>
-                {% endif %}
             </div>
             <div class="btn-group">
                 <a href="{{ url_for('araba_ekle') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Yeni Araba Ekle</a>
@@ -371,11 +131,8 @@
     </div>
 
     <div class="container">
-        <!-- Filtreleme Kartı -->
         <div class="filter-card">
-            <div class="filter-title">
-                <i class="fas fa-filter"></i> Koleksiyonumu Filtrele
-            </div>
+            <div class="filter-title"><i class="fas fa-filter"></i> Koleksiyonumu Filtrele</div>
             <form method="GET" action="{{ url_for('dashboard') }}" class="filter-form">
                 <div class="filter-group">
                     <label><i class="fas fa-search"></i> Araba Adı</label>
@@ -415,7 +172,6 @@
             </form>
         </div>
 
-        <!-- İstatistik Kartları -->
         <div class="stats-grid">
             {% if marka_sayilari %}
             <div class="stat-box">
@@ -479,8 +235,8 @@
         {% else %}
         <div class="empty-message">
             <i class="fas fa-car" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem; display: block;"></i>
-            <p>📭 Bu filtreye uygun araba bulunamadı.</p>
-            <a href="{{ url_for('dashboard') }}">Tüm arabaları göster</a>
+            <p>📭 Henüz araba eklememişsin.</p>
+            <a href="{{ url_for('araba_ekle') }}" class="btn btn-primary">+ İlk arabamı ekle</a>
         </div>
         {% endif %}
     </div>
@@ -498,12 +254,10 @@
             let mesaj = `${isim} - ${marka} ${renk} renk! 🚗`;
             window.open(`https://wa.me/?text=${encodeURIComponent(mesaj)}`, '_blank');
         }
-        
         function paylasTelegram(isim, marka, renk) {
             let mesaj = `${isim} - ${marka} ${renk} renk! 🚗`;
             window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mesaj)}`, '_blank');
         }
-        
         function paylasInstagram(isim, marka, renk) {
             let mesaj = `${isim} - ${marka} ${renk} renk! 🚗`;
             navigator.clipboard.writeText(mesaj);
@@ -512,17 +266,14 @@
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 2000);
         }
-        
         function tumunuWhatsapp() {
             let mesaj = `Diecast koleksiyonum: {{ toplam_araba }} araba! 🚗`;
             window.open(`https://wa.me/?text=${encodeURIComponent(mesaj)}`, '_blank');
         }
-        
         function tumunuTelegram() {
             let mesaj = `Diecast koleksiyonum: {{ toplam_araba }} araba! 🚗`;
             window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mesaj)}`, '_blank');
         }
-        
         function tumunuInstagram() {
             let mesaj = `Diecast koleksiyonum: {{ toplam_araba }} araba! 🚗`;
             navigator.clipboard.writeText(mesaj);
@@ -531,7 +282,6 @@
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 2000);
         }
-        
         setTimeout(() => {
             document.querySelectorAll('.flash').forEach(flash => {
                 flash.style.opacity = '0';
