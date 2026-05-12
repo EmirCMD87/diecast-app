@@ -20,7 +20,7 @@ ADMIN_PASSWORD = "diecast_admin_2025"
 # ============ OTURUM VE ÇEREZ AYARLARI ============
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=365)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
-app.config['REMEMBER_COOKIE_SECURE'] = True
+app.config['REMEMBER_COOKIE_SECURE'] = False
 app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=365)
 
