@@ -15,14 +15,14 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = "diecast_gizli_anahtar_123"
-ADMIN_PASSWORD = "emirdiecast2156"
+ADMIN_PASSWORD = "diecast_admin_2025"
 
 # ============ OTURUM VE ÇEREZ AYARLARI ============
-app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=730)
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=365)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=730)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=365)
 
 # Veritabanı
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///diecast.db"
@@ -52,6 +52,7 @@ class Araba(db.Model):
     isim = db.Column(db.String(100), nullable=False)
     marka = db.Column(db.String(50), nullable=False)
     renk = db.Column(db.String(50), nullable=False)
+    olcek = db.Column(db.String(20), nullable=False, default="1:64")
     resim_yolu = db.Column(db.String(200), nullable=False)
     tarih = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
@@ -67,7 +68,7 @@ def load_user(user_id):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user.username != "emir":
+        if current_user.username != "EmirCMD87":
             flash("Bu sayfaya erişim yetkin yok", "danger")
             return redirect(url_for("dashboard"))
         if not session.get('admin_verified'):
@@ -134,14 +135,24 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
+    # Premium süre kontrolü
+    if current_user.is_premium and current_user.premium_until and current_user.premium_until < datetime.now():
+        current_user.is_premium = False
+        db.session.commit()
+        flash("Premium üyeliğiniz sona erdi.", "warning")
+    
     marka_filtre = request.args.get('marka', '')
     renk_filtre = request.args.get('renk', '')
+    olcek_filtre = request.args.get('olcek', '')
     arama = request.args.get('arama', '')
+    
     query = Araba.query.filter_by(user_id=current_user.id)
     if marka_filtre:
         query = query.filter_by(marka=marka_filtre)
     if renk_filtre:
         query = query.filter_by(renk=renk_filtre)
+    if olcek_filtre:
+        query = query.filter_by(olcek=olcek_filtre)
     if arama:
         query = query.filter(Araba.isim.contains(arama))
     arabalar = query.order_by(Araba.tarih.desc()).all()
@@ -150,17 +161,21 @@ def dashboard():
     toplam_araba = len(tum_arabalar)
     renk_sayilari = {}
     marka_sayilari = {}
+    olcek_sayilari = {}
     for a in tum_arabalar:
         renk_sayilari[a.renk] = renk_sayilari.get(a.renk, 0) + 1
         marka_sayilari[a.marka] = marka_sayilari.get(a.marka, 0) + 1
+        olcek_sayilari[a.olcek] = olcek_sayilari.get(a.olcek, 0) + 1
     
     return render_template("dashboard.html",
                          arabalar=arabalar,
                          toplam_araba=toplam_araba,
                          renk_sayilari=renk_sayilari,
                          marka_sayilari=marka_sayilari,
+                         olcek_sayilari=olcek_sayilari,
                          secili_marka=marka_filtre,
                          secili_renk=renk_filtre,
+                         secili_olcek=olcek_filtre,
                          arama_kelimesi=arama)
 
 @app.route("/araba_ekle", methods=["GET", "POST"])
@@ -177,17 +192,28 @@ def araba_ekle():
         isim = request.form["isim"]
         marka = request.form["marka"]
         renk = request.form["renk"]
+        olcek = request.form["olcek"]
         dosya = request.files["resim"]
+        
         if not dosya or dosya.filename == "":
             flash("Resim seçmediniz!", "danger")
             return redirect(request.url)
         if not allowed_file(dosya.filename):
             flash("Sadece resim dosyaları yüklenebilir!", "danger")
             return redirect(request.url)
+        
         filename = secure_filename(f"{current_user.id}_{datetime.now().timestamp()}_{dosya.filename}")
         dosya_yolu = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         dosya.save(dosya_yolu)
-        yeni_araba = Araba(isim=isim, marka=marka, renk=renk, resim_yolu=dosya_yolu, user_id=current_user.id)
+        
+        yeni_araba = Araba(
+            isim=isim, 
+            marka=marka, 
+            renk=renk, 
+            olcek=olcek,
+            resim_yolu=dosya_yolu, 
+            user_id=current_user.id
+        )
         db.session.add(yeni_araba)
         db.session.commit()
         flash(f"{isim} başarıyla eklendi!", "success")
@@ -216,7 +242,7 @@ def export_excel():
     wb = Workbook()
     ws = wb.active
     ws.title = "Koleksiyonum"
-    basliklar = ["ID", "Araba Adı", "Marka", "Renk", "Eklenme Tarihi"]
+    basliklar = ["ID", "Araba Adı", "Marka", "Renk", "Ölçek", "Eklenme Tarihi"]
     for col, baslik in enumerate(basliklar, 1):
         cell = ws.cell(row=1, column=col, value=baslik)
         cell.font = Font(bold=True, color="FFFFFF")
@@ -227,8 +253,9 @@ def export_excel():
         ws.cell(row=row, column=2, value=a.isim)
         ws.cell(row=row, column=3, value=a.marka)
         ws.cell(row=row, column=4, value=a.renk)
-        ws.cell(row=row, column=5, value=a.tarih.strftime('%Y-%m-%d %H:%M'))
-    for col in range(1, 6):
+        ws.cell(row=row, column=5, value=a.olcek)
+        ws.cell(row=row, column=6, value=a.tarih.strftime('%Y-%m-%d %H:%M'))
+    for col in range(1, 7):
         ws.column_dimensions[get_column_letter(col)].width = 20
     temp = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
     wb.save(temp.name)
