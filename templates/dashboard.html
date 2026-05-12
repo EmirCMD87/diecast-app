@@ -403,20 +403,9 @@
                     <label><i class="fas fa-ruler"></i> Ölçek</label>
                     <select name="olcek">
                         <option value="">Tümü</option>
-                        <option value="1:120">1:120</option>
-                        <option value="1:100">1:100</option>
-                        <option value="1:87 (HO)">1:87 (HO)</option>
-                        <option value="1:72">1:72</option>
-                        <option value="1:64 (Standart)">1:64 (Standart)</option>
-                        <option value="1:55">1:55</option>
-                        <option value="1:50">1:50</option>
-                        <option value="1:43">1:43</option>
-                        <option value="1:32">1:32</option>
-                        <option value="1:24">1:24</option>
-                        <option value="1:20">1:20</option>
-                        <option value="1:18">1:18</option>
-                        <option value="1:12">1:12</option>
-                        <option value="1:1 (Gerçek boyut)">1:1 (Gerçek boyut)</option>
+                        {% for olcek in olcek_sayilari.keys() %}
+                        <option value="{{ olcek }}" {% if secili_olcek == olcek %}selected{% endif %}>{{ olcek }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="filter-actions">
