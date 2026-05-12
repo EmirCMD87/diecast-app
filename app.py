@@ -15,7 +15,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = "diecast_gizli_anahtar_123"
-ADMIN_PASSWORD = "diecast_admin_2025"
+ADMIN_PASSWORD = "emir2156"
 
 # ============ OTURUM VE ÇEREZ AYARLARI ============
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=365)
@@ -68,7 +68,7 @@ def load_user(user_id):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user.username != "EmirCMD87":
+        if current_user.username != "emir":
             flash("Bu sayfaya erişim yetkin yok", "danger")
             return redirect(url_for("dashboard"))
         if not session.get('admin_verified'):
