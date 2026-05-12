@@ -65,10 +65,6 @@
             text-decoration: none;
         }
         
-        .stat-card a:hover {
-            text-decoration: underline;
-        }
-        
         .premium-badge {
             background: #f39c12;
             color: white;
@@ -88,10 +84,6 @@
             font-size: 0.9rem;
             text-decoration: none;
             display: inline-block;
-        }
-        
-        .premium-btn:hover {
-            background: #218838;
         }
         
         .btn-group {
@@ -114,54 +106,24 @@
             gap: 0.5rem;
         }
         
-        .btn-primary {
-            background: #28a745;
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background: #218838;
-            transform: translateY(-2px);
-        }
-        
-        .btn-excel {
-            background: #1e3c72;
-            color: white;
-        }
-        
-        .btn-whatsapp {
-            background: #25D366;
-            color: white;
-        }
-        
-        .btn-telegram {
-            background: #0088cc;
-            color: white;
-        }
-        
-        .btn-instagram {
-            background: #E4405F;
-            color: white;
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
+        .btn-primary { background: #28a745; color: white; }
+        .btn-excel { background: #1e3c72; color: white; }
+        .btn-whatsapp { background: #25D366; color: white; }
+        .btn-telegram { background: #0088cc; color: white; }
+        .btn-instagram { background: #E4405F; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
         
         .btn:hover {
             transform: translateY(-2px);
             filter: brightness(1.05);
         }
         
-        /* Container */
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
         }
         
-        /* Filtreleme Kartı */
         .filter-card {
             background: white;
             border-radius: 20px;
@@ -189,7 +151,7 @@
         
         .filter-group {
             flex: 1;
-            min-width: 160px;
+            min-width: 140px;
         }
         
         .filter-group label {
@@ -207,14 +169,6 @@
             border: 1px solid #ddd;
             border-radius: 12px;
             font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-        
-        .filter-group input:focus,
-        .filter-group select:focus {
-            outline: none;
-            border-color: #1e3c72;
-            box-shadow: 0 0 0 3px rgba(30,60,114,0.1);
         }
         
         .filter-actions {
@@ -229,7 +183,6 @@
             border: none;
             border-radius: 12px;
             cursor: pointer;
-            font-weight: 500;
         }
         
         .filter-actions a {
@@ -238,10 +191,8 @@
             color: white;
             border-radius: 12px;
             text-decoration: none;
-            font-weight: 500;
         }
         
-        /* İstatistik Kartları */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -260,9 +211,6 @@
             font-size: 1rem;
             color: #666;
             margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
         
         .stat-tags {
@@ -279,7 +227,6 @@
             font-weight: 500;
         }
         
-        /* Araba Grid */
         .cars-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -303,7 +250,6 @@
             width: 100%;
             height: 220px;
             object-fit: cover;
-            background: #f0f2f5;
         }
         
         .car-info {
@@ -354,28 +300,12 @@
             text-decoration: none;
             border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
         
-        .btn-wa {
-            background: #25D366;
-            color: white;
-        }
-        
-        .btn-tg {
-            background: #0088cc;
-            color: white;
-        }
-        
-        .btn-ig {
-            background: #E4405F;
-            color: white;
-        }
-        
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-        }
+        .btn-wa { background: #25D366; color: white; }
+        .btn-tg { background: #0088cc; color: white; }
+        .btn-ig { background: #E4405F; color: white; }
+        .btn-delete { background: #dc3545; color: white; }
         
         .empty-message {
             text-align: center;
@@ -383,11 +313,6 @@
             background: white;
             border-radius: 20px;
             color: #666;
-        }
-        
-        .empty-message a {
-            color: #1e3c72;
-            text-decoration: none;
         }
         
         .flash {
@@ -407,30 +332,9 @@
         
         .flash.success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
         .flash.danger { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
-        .flash.info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
-        
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: white;
-            padding: 0.8rem 1.5rem;
-            border-radius: 30px;
-            z-index: 1001;
-            animation: fadeOut 2s ease-in-out;
-        }
-        
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
-        }
         
         @media (max-width: 768px) {
             .header-content { flex-direction: column; text-align: center; }
-            .stats { justify-content: center; }
             .filter-form { flex-direction: column; }
             .filter-actions { width: 100%; }
             .filter-actions button, .filter-actions a { width: 100%; text-align: center; }
@@ -445,9 +349,10 @@
                 <div class="stat-card"><i class="fas fa-tachometer-alt"></i> Toplam: <strong>{{ toplam_araba }}</strong></div>
                 <div class="stat-card"><i class="fas fa-palette"></i> Renk: <strong>{{ renk_sayilari|length }}</strong></div>
                 <div class="stat-card"><i class="fas fa-tag"></i> Marka: <strong>{{ marka_sayilari|length }}</strong></div>
+                <div class="stat-card"><i class="fas fa-ruler"></i> Ölçek: <strong>{{ olcek_sayilari|length }}</strong></div>
                 <div class="stat-card">
                     <i class="fas fa-link"></i> 
-                    <a href="{{ url_for('public_profile', username=current_user.username) }}" target="_blank">🔗 Profil Linkim</a>
+                    <a href="{{ url_for('public_profile', username=current_user.username) }}" target="_blank">Profil Linkim</a>
                 </div>
                 {% if current_user.is_premium %}
                     <div class="premium-badge"><i class="fas fa-star"></i> PREMİUM ÜYE</div>
@@ -495,6 +400,15 @@
                         {% endfor %}
                     </select>
                 </div>
+                <div class="filter-group">
+                    <label><i class="fas fa-ruler"></i> Ölçek</label>
+                    <select name="olcek">
+                        <option value="">Tümü</option>
+                        {% for olcek in olcek_sayilari.keys() %}
+                        <option value="{{ olcek }}" {% if secili_olcek == olcek %}selected{% endif %}>{{ olcek }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
                 <div class="filter-actions">
                     <button type="submit"><i class="fas fa-search"></i> Filtrele</button>
                     <a href="{{ url_for('dashboard') }}"><i class="fas fa-eraser"></i> Temizle</a>
@@ -502,7 +416,7 @@
             </form>
         </div>
 
-        <!-- Marka ve Renk İstatistik Kartları -->
+        <!-- İstatistik Kartları -->
         <div class="stats-grid">
             {% if marka_sayilari %}
             <div class="stat-box">
@@ -525,9 +439,20 @@
                 </div>
             </div>
             {% endif %}
+
+            {% if olcek_sayilari %}
+            <div class="stat-box">
+                <h3><i class="fas fa-ruler"></i> Ölçek Dağılımı</h3>
+                <div class="stat-tags">
+                    {% for olcek, sayi in olcek_sayilari.items() %}
+                    <span class="stat-tag">📏 {{ olcek }}: {{ sayi }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
         </div>
 
-        <h2 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;"><i class="fas fa-images"></i> Arabalarım</h2>
+        <h2 style="margin-bottom: 1rem;"><i class="fas fa-images"></i> Arabalarım</h2>
         
         {% if arabalar %}
         <div class="cars-grid">
@@ -539,6 +464,7 @@
                     <div class="car-details">
                         <span class="car-detail">🏷️ {{ araba.marka }}</span>
                         <span class="car-detail">🎨 {{ araba.renk }}</span>
+                        <span class="car-detail">📏 {{ araba.olcek }}</span>
                     </div>
                     <div class="car-date"><i class="far fa-calendar-alt"></i> {{ araba.tarih.strftime('%d.%m.%Y') }}</div>
                     <div class="car-actions">
@@ -569,66 +495,42 @@
     <div id="toast" style="display: none;"></div>
 
     <script>
-        function markaEmoji(marka) {
-            if (marka == "Hot Wheels") return "🔥";
-            if (marka == "Matchbox") return "📦";
-            return "🚗";
-        }
-        
-        function mesajOlustur(isim, marka, renk) {
-            return `${markaEmoji(marka)} ${isim} - ${marka} ${renk} renk! 🚗💨`;
-        }
-        
-        function koleksiyonMesaji() {
-            let toplam = {{ toplam_araba }};
-            let markaSay = {{ marka_sayilari|length }};
-            let renkSay = {{ renk_sayilari|length }};
-            return `🚗 Diecast koleksiyonum: ${toplam} araba, ${markaSay} farklı marka, ${renkSay} farklı renk! 🔥`;
-        }
-        
-        function gosterToast(mesaj) {
-            let toast = document.getElementById('toast');
-            toast.textContent = mesaj;
-            toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 2000);
-        }
-        
         function paylasWhatsapp(isim, marka, renk) {
-            let mesaj = mesajOlustur(isim, marka, renk);
-            let url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
-            window.open(url, '_blank');
+            let mesaj = `${isim} - ${marka} ${renk} renk! 🚗`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(mesaj)}`, '_blank');
         }
         
         function paylasTelegram(isim, marka, renk) {
-            let mesaj = mesajOlustur(isim, marka, renk);
-            let url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mesaj)}`;
-            window.open(url, '_blank');
+            let mesaj = `${isim} - ${marka} ${renk} renk! 🚗`;
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mesaj)}`, '_blank');
         }
         
         function paylasInstagram(isim, marka, renk) {
-            let mesaj = mesajOlustur(isim, marka, renk);
+            let mesaj = `${isim} - ${marka} ${renk} renk! 🚗`;
             navigator.clipboard.writeText(mesaj);
-            gosterToast('✅ Metin kopyalandı! Instagram\'da yapıştırabilirsin.');
+            let toast = document.getElementById('toast');
+            toast.textContent = '✅ Metin kopyalandı!';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
         }
         
         function tumunuWhatsapp() {
-            let mesaj = koleksiyonMesaji();
-            let url = `https://wa.me/?text=${encodeURIComponent(mesaj)}`;
-            window.open(url, '_blank');
+            let mesaj = `Diecast koleksiyonum: {{ toplam_araba }} araba! 🚗`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(mesaj)}`, '_blank');
         }
         
         function tumunuTelegram() {
-            let mesaj = koleksiyonMesaji();
-            let url = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mesaj)}`;
-            window.open(url, '_blank');
+            let mesaj = `Diecast koleksiyonum: {{ toplam_araba }} araba! 🚗`;
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(mesaj)}`, '_blank');
         }
         
         function tumunuInstagram() {
-            let mesaj = koleksiyonMesaji();
+            let mesaj = `Diecast koleksiyonum: {{ toplam_araba }} araba! 🚗`;
             navigator.clipboard.writeText(mesaj);
-            gosterToast('✅ Metin kopyalandı! Instagram\'da yapıştırabilirsin.');
+            let toast = document.getElementById('toast');
+            toast.textContent = '✅ Metin kopyalandı!';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
         }
         
         setTimeout(() => {
