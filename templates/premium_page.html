@@ -19,8 +19,8 @@
             padding: 2rem;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
         }
-        h1 { color: #1e3c72; margin-bottom: 0.5rem; }
-        .price { font-size: 2rem; font-weight: bold; color: #28a745; margin: 1rem 0; }
+        h1 { color: #1e3c72; margin-bottom: 0.5rem; text-align: center; }
+        .price-info { text-align: center; color: #28a745; font-weight: bold; margin-bottom: 1rem; }
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -32,6 +32,64 @@
             padding: 1rem;
             border-radius: 15px;
             text-align: center;
+        }
+        .payment-box {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            border: 2px solid #28a745;
+        }
+        .payment-info {
+            font-size: 1rem;
+            margin: 1rem 0;
+        }
+        .payment-info strong {
+            background: #1e3c72;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        .sure-secim {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+        .sure-btn {
+            background: #e9ecef;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .sure-btn.selected {
+            background: #1e3c72;
+            color: white;
+        }
+        .sure-btn:hover {
+            background: #2a5298;
+            color: white;
+        }
+        .daha-fazla-alan {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f0f2f5;
+            border-radius: 15px;
+        }
+        .daha-fazla-alan input {
+            width: 100%;
+            padding: 0.7rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-top: 0.5rem;
         }
         .btn {
             background: #f39c12;
@@ -46,29 +104,130 @@
             display: inline-block;
         }
         .btn:hover { background: #e67e22; }
-        .note { margin-top: 2rem; font-size: 0.8rem; color: #666; }
+        .btn-wa {
+            background: #25D366;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+        .btn-wa:hover { background: #128C7E; }
+        .note { margin-top: 1rem; font-size: 0.8rem; color: #666; text-align: center; }
+        .login-link { text-align: center; margin-top: 1rem; }
+        input, textarea {
+            width: 100%;
+            padding: 0.7rem;
+            margin-top: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🚀 Premium Üyelik</h1>
-        <p>Sınırsız koleksiyon, reklamsız deneyim ve özel rozet.</p>
-        <div class="price">$7 / ay (≈ 250 TL)</div>
+        <div class="price-info">💵 Aylık $7 (≈ 250 TL)</div>
+
         <div class="features">
             <div class="feature">♾️ Sınırsız araba ekleme</div>
             <div class="feature">⭐ Premium rozeti</div>
             <div class="feature">📊 Gelişmiş Excel raporu</div>
+            <div class="feature">📏 Ölçek filtresi</div>
         </div>
-        <button class="btn" onclick="bilgiAl()">💰 Premium'a Geç - Bilgi Al</button>
+
+        {% if current_user.is_authenticated %}
+            {% if current_user.is_premium %}
+                <div class="payment-box" style="border-color: #f39c12;">
+                    <h3>✅ Zaten Premium Üyesin!</h3>
+                    <p>Premium üyeliğin aktif. Teşekkürler!</p>
+                </div>
+            {% else %}
+                <form method="POST" action="{{ url_for('payment_notification') }}" id="premiumForm">
+                    <div class="payment-box">
+                        <h3>⏱️ Süre Seçimi</h3>
+                        <div class="sure-secim" id="sureSecim">
+                            <button type="button" class="sure-btn" data-gun="30">1 Ay</button>
+                            <button type="button" class="sure-btn" data-gun="90">3 Ay</button>
+                            <button type="button" class="sure-btn" data-gun="150">5 Ay</button>
+                            <button type="button" class="sure-btn" data-gun="210">7 Ay</button>
+                            <button type="button" class="sure-btn" data-gun="270">9 Ay</button>
+                            <button type="button" class="sure-btn" data-gun="365">1 Yıl</button>
+                            <button type="button" class="sure-btn" data-gun="1095">3 Yıl</button>
+                            <button type="button" class="sure-btn" id="dahaFazlaBtn" data-gun="0">📅 Daha Fazla</button>
+                        </div>
+                        
+                        <div id="dahaFazlaAlan" class="daha-fazla-alan">
+                            <label>Kaç yıl/ay istiyorsun? (Örn: 6 ay, 2 yıl)</label>
+                            <input type="text" id="ozelSure" name="ozel_sure" placeholder="Örnek: 6 ay, 2 yıl, 500 gün">
+                            <small>Gün, ay veya yıl olarak yazabilirsin.</small>
+                        </div>
+
+                        <input type="hidden" name="secili_sure" id="seciliSure" value="30">
+                        <input type="hidden" name="secili_sure_text" id="seciliSureText" value="1 Ay">
+
+                        <div class="payment-info">
+                            🏦 IBAN: <strong>TR12 3456 7890 1234 5678 9012 34</strong><br>
+                            👤 Hesap Sahibi: <strong>Emir Dirarin</strong>
+                        </div>
+                        <p>Ödeme yaptıktan sonra aşağıdaki butona tıklayarak bildirim gönder.</p>
+                        <button type="button" class="btn btn-wa" onclick="bildirimGonder()">
+                            💬 Ödemeyi Bildir (WhatsApp)
+                        </button>
+                    </div>
+
+                    <div class="payment-box" style="border-color: #1e3c72;">
+                        <h3>📝 Ödeme Bildirim Formu</h3>
+                        <p>Ödeme yaptıktan sonra formu doldur, admin sana en kısa sürede premium'u aktifleştirsin.</p>
+                        <input type="text" name="ad_soyad" placeholder="Ad Soyad" required>
+                        <input type="text" name="telefon" placeholder="Telefon Numarası" required>
+                        <textarea name="mesaj" rows="2" placeholder="Ödeme ile ilgili not (isteğe bağlı)"></textarea>
+                        <button type="submit" class="btn" style="margin-top: 1rem; width: 100%;">📨 Bildirim Gönder</button>
+                    </div>
+                </form>
+            {% endif %}
+        {% else %}
+            <div class="login-link">
+                <a href="{{ url_for('login') }}" style="background: #1e3c72; color: white; padding: 0.8rem 2rem; border-radius: 40px; text-decoration: none;">🔐 Önce Giriş Yap</a>
+            </div>
+            <p style="text-align: center; margin-top: 1rem;">Premium'a geçmek için önce giriş yapmalısın.</p>
+        {% endif %}
+
         <div class="note">
-            Ödeme IBAN veya Papara ile alınır. Premium üyelik manuel olarak aktif edilir.<br>
+            Premium üyelik manuel olarak aktif edilir. Ödeme bildirimi yaptıktan sonra en geç 24 saat içinde premium hesabın aktifleşir.<br>
             İletişim: <strong>hdirarin@gmail.com</strong>
         </div>
     </div>
+
     <script>
-        function bilgiAl() {
-            const mesaj = "Premium üyelik hakkında bilgi almak istiyorum.";
-            window.open("https://wa.me/905433100311?text=" + encodeURIComponent(mesaj), '_blank');
+        let selectedDays = 30;
+        let selectedText = "1 Ay";
+
+        document.querySelectorAll('.sure-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.sure-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                if(this.id === 'dahaFazlaBtn') {
+                    document.getElementById('dahaFazlaAlan').style.display = 'block';
+                    selectedDays = 0;
+                    selectedText = 'Daha Fazla';
+                } else {
+                    document.getElementById('dahaFazlaAlan').style.display = 'none';
+                    selectedDays = parseInt(this.dataset.gun);
+                    selectedText = this.innerText;
+                }
+                document.getElementById('seciliSure').value = selectedDays;
+                document.getElementById('seciliSureText').value = selectedText;
+            });
+        });
+
+        document.querySelector('.sure-btn[data-gun="30"]').classList.add('selected');
+
+        function bildirimGonder() {
+            let sureGun = document.getElementById('seciliSure').value;
+            let sureText = document.getElementById('seciliSureText').value;
+            let ozelSure = document.getElementById('ozelSure') ? document.getElementById('ozelSure').value : '';
+            let mesaj = `Merhaba, premium üyelik için ödeme yaptım. Kullanıcı adım: {{ current_user.username }} Seçilen süre: ${sureText}`;
+            if(ozelSure) mesaj += ` Özel süre: ${ozelSure}`;
+            window.open(`https://wa.me/905433100311?text=${encodeURIComponent(mesaj)}`, '_blank');
         }
     </script>
 </body>
