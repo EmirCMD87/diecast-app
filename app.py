@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 import os
 import tempfile
+import urllib.parse
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -20,7 +21,7 @@ ADMIN_PASSWORD = "emir2156"
 # ============ OTURUM VE ÇEREZ AYARLARI ============
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=365)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
-app.config['REMEMBER_COOKIE_SECURE'] = False
+app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=365)
 
@@ -181,7 +182,6 @@ def dashboard():
 @app.route("/araba_ekle", methods=["GET", "POST"])
 @login_required
 def araba_ekle():
-    # Premium değilse ve 20'den fazla arabası varsa engelle
     if not current_user.is_premium:
         araba_sayisi = Araba.query.filter_by(user_id=current_user.id).count()
         if araba_sayisi >= 20:
@@ -266,6 +266,27 @@ def export_excel():
 def premium_page():
     return render_template("premium_page.html")
 
+@app.route("/payment_notification", methods=["POST"])
+@login_required
+def payment_notification():
+    ad_soyad = request.form.get("ad_soyad")
+    telefon = request.form.get("telefon")
+    mesaj = request.form.get("mesaj")
+    secili_sure = request.form.get("secili_sure")
+    secili_sure_text = request.form.get("secili_sure_text")
+    ozel_sure = request.form.get("ozel_sure", "")
+    
+    bildirim = f"🔔 YENİ ÖDEME BİLDİRİMİ!\n\n👤 Kullanıcı: {current_user.username}\n📝 Ad Soyad: {ad_soyad}\n📱 Telefon: {telefon}\n⏱️ Seçilen Süre: {secili_sure_text}"
+    if ozel_sure:
+        bildirim += f"\n📅 Özel Süre: {ozel_sure}"
+    if mesaj:
+        bildirim += f"\n💬 Not: {mesaj}"
+    
+    whatsapp_url = f"https://wa.me/905433100311?text={urllib.parse.quote(bildirim)}"
+    
+    flash("Ödeme bildiriminiz alındı! En kısa sürede premium hesabınız aktifleştirilecektir.", "success")
+    return redirect(url_for("premium_page"))
+
 @app.route('/@<username>')
 def public_profile(username):
     user = User.query.filter_by(username=username).first_or_404()
@@ -300,7 +321,7 @@ def make_premium(user_id):
     user.is_premium = True
     user.premium_until = datetime.now() + timedelta(days=30)
     db.session.commit()
-    flash(f"{user.username} artık PREMIUM!", "success")
+    flash(f"{user.username} artık PREMIUM! (1 ay)", "success")
     return redirect(url_for("admin_panel"))
 
 @app.route("/remove_premium/<int:user_id>")
