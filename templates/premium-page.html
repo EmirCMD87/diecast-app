@@ -55,22 +55,12 @@
         <h1>🚀 Premium Üyelik</h1>
         <p>Sınırsız koleksiyon, reklamsız deneyim ve özel rozet.</p>
         <div class="price">$7 / ay (≈ 250 TL)</div>
-
         <div class="features">
             <div class="feature">♾️ Sınırsız araba ekleme</div>
             <div class="feature">⭐ Premium rozeti</div>
             <div class="feature">📊 Gelişmiş Excel raporu</div>
         </div>
-
-        {% if current_user.is_authenticated %}
-            <button class="btn" onclick="bilgiAl()">💰 Premium'a Geç - Bilgi Al</button>
-        {% else %}
-            <div class="login-link">
-                <a href="{{ url_for('login') }}" style="background: #1e3c72; color: white; padding: 0.8rem 2rem; border-radius: 40px; text-decoration: none;">🔐 Önce Giriş Yap</a>
-            </div>
-            <p style="text-align: center; margin-top: 1rem;">Premium'a geçmek için önce giriş yapmalısın.</p>
-        {% endif %}
-
+        <button class="btn" onclick="bilgiAl()">💰 Premium'a Geç - Bilgi Al</button>
         <div class="note">
             Ödeme IBAN veya Papara ile alınır. Premium üyelik manuel olarak aktif edilir.<br>
             İletişim: <strong>hdirarin@gmail.com</strong>
@@ -78,8 +68,8 @@
     </div>
     <script>
         function bilgiAl() {
-            const mesaj = "Premium üyelik ile ilgili bilgi almak istiyorum. Kullanıcı adım: {{ current_user.username }}";
-            window.open(`https://wa.me/905551234567?text=${encodeURIComponent(mesaj)}`, '_blank');
+            const mesaj = "Premium üyelik hakkında bilgi almak istiyorum.";
+            window.open("https://wa.me/905551234567?text=" + encodeURIComponent(mesaj), '_blank');
         }
     </script>
 </body>
