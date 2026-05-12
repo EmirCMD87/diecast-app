@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from functools import wraps
 import os
 import tempfile
-import urllib.parse
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -16,9 +15,9 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.secret_key = "diecast_gizli_anahtar_123"
-ADMIN_PASSWORD = "emir2156"
+ADMIN_PASSWORD = "diecast_admin_2025"
 
-# ============ OTURUM VE ÇEREZ AYARLARI ============
+# Oturum ayarları
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=365)
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 app.config['REMEMBER_COOKIE_SECURE'] = True
@@ -44,8 +43,6 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    is_premium = db.Column(db.Boolean, default=False)
-    premium_until = db.Column(db.DateTime, nullable=True)
     arabalar = db.relationship("Araba", backref="sahip", lazy=True)
 
 class Araba(db.Model):
@@ -69,7 +66,7 @@ def load_user(user_id):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user.username != "emir":
+        if current_user.username != "EmirCMD87":
             flash("Bu sayfaya erişim yetkin yok", "danger")
             return redirect(url_for("dashboard"))
         if not session.get('admin_verified'):
@@ -136,12 +133,6 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    # Premium süre kontrolü
-    if current_user.is_premium and current_user.premium_until and current_user.premium_until < datetime.now():
-        current_user.is_premium = False
-        db.session.commit()
-        flash("Premium üyeliğiniz sona erdi.", "warning")
-    
     marka_filtre = request.args.get('marka', '')
     renk_filtre = request.args.get('renk', '')
     olcek_filtre = request.args.get('olcek', '')
@@ -182,12 +173,6 @@ def dashboard():
 @app.route("/araba_ekle", methods=["GET", "POST"])
 @login_required
 def araba_ekle():
-    if not current_user.is_premium:
-        araba_sayisi = Araba.query.filter_by(user_id=current_user.id).count()
-        if araba_sayisi >= 20:
-            flash("❌ Ücretsiz kullanıcılar en fazla 20 araba ekleyebilir. Premium'a geçmek için iletişime geçin.", "danger")
-            return redirect(url_for("dashboard"))
-    
     if request.method == "POST":
         isim = request.form["isim"]
         marka = request.form["marka"]
@@ -262,31 +247,6 @@ def export_excel():
     temp.close()
     return send_file(temp.name, as_attachment=True, download_name=f"koleksiyonum_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx", mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
-@app.route("/premium")
-def premium_page():
-    return render_template("premium_page.html")
-
-@app.route("/payment_notification", methods=["POST"])
-@login_required
-def payment_notification():
-    ad_soyad = request.form.get("ad_soyad")
-    telefon = request.form.get("telefon")
-    mesaj = request.form.get("mesaj")
-    secili_sure = request.form.get("secili_sure")
-    secili_sure_text = request.form.get("secili_sure_text")
-    ozel_sure = request.form.get("ozel_sure", "")
-    
-    bildirim = f"🔔 YENİ ÖDEME BİLDİRİMİ!\n\n👤 Kullanıcı: {current_user.username}\n📝 Ad Soyad: {ad_soyad}\n📱 Telefon: {telefon}\n⏱️ Seçilen Süre: {secili_sure_text}"
-    if ozel_sure:
-        bildirim += f"\n📅 Özel Süre: {ozel_sure}"
-    if mesaj:
-        bildirim += f"\n💬 Not: {mesaj}"
-    
-    whatsapp_url = f"https://wa.me/905433100311?text={urllib.parse.quote(bildirim)}"
-    
-    flash("Ödeme bildiriminiz alındı! En kısa sürede premium hesabınız aktifleştirilecektir.", "success")
-    return redirect(url_for("premium_page"))
-
 @app.route('/@<username>')
 def public_profile(username):
     user = User.query.filter_by(username=username).first_or_404()
@@ -312,28 +272,6 @@ def admin_login():
 def admin_panel():
     kullanicilar = User.query.all()
     return render_template("admin.html", kullanicilar=kullanicilar)
-
-@app.route("/make_premium/<int:user_id>")
-@login_required
-@admin_required
-def make_premium(user_id):
-    user = User.query.get_or_404(user_id)
-    user.is_premium = True
-    user.premium_until = datetime.now() + timedelta(days=30)
-    db.session.commit()
-    flash(f"{user.username} artık PREMIUM! (1 ay)", "success")
-    return redirect(url_for("admin_panel"))
-
-@app.route("/remove_premium/<int:user_id>")
-@login_required
-@admin_required
-def remove_premium(user_id):
-    user = User.query.get_or_404(user_id)
-    user.is_premium = False
-    user.premium_until = None
-    db.session.commit()
-    flash(f"{user.username} artık PREMIUM değil.", "warning")
-    return redirect(url_for("admin_panel"))
 
 # ------------------- VERİTABANI OLUŞTUR -------------------
 with app.app_context():
